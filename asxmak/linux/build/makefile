@@ -24,6 +24,7 @@ all:	as1802		\
 	as6812		\
 	as6816		\
 	as740		\
+	as78k		\
 	as8048		\
 	as8051		\
 	as8085		\
@@ -68,6 +69,7 @@ clean:
 	rm -f $(SRC6811)*.o
 	rm -f $(SRC6812)*.o
 	rm -f $(SRC740)*.o
+	rm -f $(SRC78K)*.o
 	rm -f $(SRC61860)*.o
 	rm -f $(SRC8048)*.o
 	rm -f $(SRC8051)*.o
@@ -104,6 +106,7 @@ clean:
 	rm -f as6812
 	rm -f as6816
 	rm -f as740
+	rm -f as78k
 	rm -f as8048
 	rm -f as8051
 	rm -f as8085
@@ -149,6 +152,7 @@ prep:
 	rm -f $(SRC6811)*.o
 	rm -f $(SRC6812)*.o
 	rm -f $(SRC740)*.o
+	rm -f $(SRC78K)*.o
 	rm -f $(SRC61860)*.o
 	rm -f $(SRC8048)*.o
 	rm -f $(SRC8051)*.o
@@ -185,6 +189,7 @@ prep:
 	rm -f as6812
 	rm -f as6816
 	rm -f as740
+	rm -f as78k
 	rm -f as8048
 	rm -f as8051
 	rm -f as8085
@@ -243,6 +248,7 @@ SRC6811=	$(ASXBAS)as6811/
 SRC6812=	$(ASXBAS)as6812/
 SRC6816=	$(ASXBAS)as6816/
 SRC740=		$(ASXBAS)as740/
+SRC78K=		$(ASXBAS)as78k/
 SRC8048=	$(ASXBAS)as8048/
 SRC8051=	$(ASXBAS)as8051/
 SRC8085=	$(ASXBAS)as8085/
@@ -531,6 +537,23 @@ as740:	$(ASXXSRC) $(AS740SRC)
 	cp as740 $(DSTEXE)as740
 	strip $(DSTEXE)as740
 	chmod 755 $(DSTEXE)as740
+
+
+####################################################################
+# AS78K
+####################################################################
+
+AS78K =         n78kadr.o n78kmch.o n78kpst.o
+
+AS78KSRC =      $(addprefix $(SRC78K),$(AS78K))
+
+$(AS78KSRC):    $(SRCMISC)alloc.h $(SRCASX)asxxxx.h $(SRC78K)n78k.h
+
+as78k:  $(ASXXSRC) $(AS78KSRC)
+	$(LD) $(LDFLAGS) $(ASXXSRC) $(AS78KSRC) -o as78k
+	cp as78k $(DSTEXE)as78k
+	strip $(DSTEXE)as78k
+	chmod 755 $(DSTEXE)as78k
 
 
 ####################################################################
