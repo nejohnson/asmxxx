@@ -1,0 +1,41 @@
+NEC 78K3 Series Assembler
+==============================================================================
+
+Use directives to choose specific processor variants.
+
+
+Directives
+------------------------------------------------------------------------------
+
+Directive	Processors
+------------	--------------------------------------------------------------
+.upd78310	uPD78310, uPD78312, uPD78P312
+.upd78310a	uPD78310A, uPD78312A, uPD78P312A
+.upd78320	uPD78320, uPD78322, uPD78P322, uPD78323, uPD78324, uPD78P324
+.upd78328	uPD78327, uPD78328, uPD78P328
+.upd78330	uPD78330, uPD78334, uPD78P334
+.upd78350	uPD78350, uPD78350A, uPD78P352
+.upd78356	uPD78355, uPD78356, uPD78P356
+.upd78362a	uPD78361A, uPD78362A, uPD78P364A, uPD78363A, uPD78365A, 
+		 uPD78366A, uPD78368A, uPD78P368A
+.upd78372	uPD78372(A), uPD78P372(A)
+
+
+Machine Differences
+------------------------------------------------------------------------------
+
+.upd78310	Base machine with 94 instructions
+
+.upd78310a	96 instructions: adds "MOVW rp1, !addr16" and "MOVW !addr16, rp1"
+
+.upd78320	111 instructions: adds 16-bit AX<->mem movw, 16-bit AX<->mem xchgw
+.upd78328		sign extend, retb, retcsb, sfrp push/pop, port test,
+.upd78330		signed mult, and three instructions changed or re-encoded.
+
+.upd78350	113 instructions: adds macw and table shift
+
+.upd78356	115 instructions: adds signalling mac, correlation
+.upd78362a
+.upd78372
+
+

@@ -1,7 +1,7 @@
-/* n78kpst.c */
+/* n78k3pst.c */
 
 /*
- *  Copyright (C) 2014  Neil Johnson
+ *  Copyright (C) 2014-2015  Neil Johnson
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
  */
 
 #include "asxxxx.h"
-#include "n78k.h"
+#include "n78k3.h"
 
 /*
  * Coding Banks
@@ -88,6 +88,9 @@ struct	mode	*modep[16] = {
  * Mnemonic Structure
  */
 struct	mne	mne[] = {
+
+    /* Hash     Mnemonic    Subtype  Flags  Value       */
+    /* link                                             */
 
 	/* machine */
 
@@ -220,106 +223,183 @@ struct	mne	mne[] = {
 
 	/* Machines */
 
-    {	NULL,	".z80",		S_CPU,		0,	X_Z80	},
-    {	NULL,	".hd64",	S_CPU,		0,	X_HD64	},
-    {	NULL,	".z180",	S_CPU,		0,	X_HD64	},
+    {	NULL,	".upd78310",    S_CPU,		0,	X_UPD78310	},
+    {	NULL,	".upd78310a",	S_CPU,		0,	X_UPD78310A	},
+    {	NULL,	".upd78320",	S_CPU,		0,	X_UPD78320	},
+    {   NULL,   ".upd78328",    S_CPU,      0,  X_UPD78328  },
+    {   NULL,   ".upd78330",    S_CPU,      0,  X_UPD78330  },
+    {   NULL,   ".upd78350",    S_CPU,      0,  X_UPD78350  },
+    {   NULL,   ".upd78356",    S_CPU,      0,  X_UPD78356  },
+    {   NULL,   ".upd78362a",   S_CPU,      0,  X_UPD78362A },
+    {   NULL,   ".upd78372",    S_CPU,      0,  X_UPD78372  },
 
-	/* z80 */
+	/* UPD78310 */
 
-    {	NULL,	"ld",		S_LD,		0,	0x40	},
+    /* Data transfer */
 
-    {	NULL,	"call",		S_CALL,		0,	0xC4	},
-    {	NULL,	"jp",		S_JP,		0,	0xC2	},
-    {	NULL,	"jr",		S_JR,		0,	0x18	},
-    {	NULL,	"djnz",		S_DJNZ,		0,	0x10	},
-    {	NULL,	"ret",		S_RET,		0,	0xC0	},
+    {   NULL,   "mov",      S_MOV,      0, 0x00     },
+    {   NULL,   "xch",      S_XCH,      0, 0x00     },
+    {   NULL,   "movw",     S_MOVW,     0, 0x00     },
+    {   NULL,   "xchw",     S_XCHW,     0, 0x00     },
 
-    {	NULL,	"bit",		S_BIT,		0,	0x40	},
-    {	NULL,	"res",		S_BIT,		0,	0x80	},
-    {	NULL,	"set",		S_BIT,		0,	0xC0	},
+    /* 8-bit Operations */
 
-    {	NULL,	"inc",		S_INC,		0,	0x04	},
-    {	NULL,	"dec",		S_DEC,		0,	0x05	},
+    {   NULL,   "add",      S_ADD,      0, 0x00     },
+    {   NULL,   "sddc",     S_ADDC,     0, 0x00     },
+    {   NULL,   "sub",      S_SUB,      0, 0x00     },
+    {   NULL,   "subc",     S_SUBC,     0, 0x00     },
+    {   NULL,   "and",      S_AND,      0, 0x00     },
+    {   NULL,   "or",       S_OR,       0, 0x00     },
+    {   NULL,   "xor",      S_XOR,      0, 0x00     },
+    {   NULL,   "cmp",      S_CMP,      0, 0x00     },
 
-    {	NULL,	"add",		S_ADD,		0,	0x80	},
-    {	NULL,	"adc",		S_ADC,		0,	0x88	},
-    {	NULL,	"sub",		S_SUB,		0,	0x90	},
-    {	NULL,	"sbc",		S_SBC,		0,	0x98	},
+    /* 16-bit Operations */
 
-    {	NULL,	"and",		S_AND,		0,	0xA0	},
-    {	NULL,	"cp",		S_AND,		0,	0xB8	},
-    {	NULL,	"or",		S_AND,		0,	0xB0	},
-    {	NULL,	"xor",		S_AND,		0,	0xA8	},
+    {   NULL,   "addw",     S_ADDW,     0, 0x00     },
+    {   NULL,   "subw",     S_SUBW,     0, 0x00     },
+    {   NULL,   "cmpw",     S_CMPW,     0, 0x00     },
 
-    {	NULL,	"ex",		S_EX,		0,	0xE3	},
+    /* Mult/Div */
 
-    {	NULL,	"push",		S_PUSH,		0,	0xC5	},
-    {	NULL,	"pop",		S_PUSH,		0,	0xC1	},
+    {   NULL,   "multu",    S_MULTU,    0, 0x00     },
+    {   NULL,   "divuw",    S_DIVUW,    0, 0x00     },
+    {   NULL,   "muluw",    S_MULUW,    0, 0x00     },
+    {   NULL,   "divux",    S_DIVUX,    0, 0x00     },
 
-    {	NULL,	"in",		S_IN,		0,	0xDB	},
-    {	NULL,	"out",		S_OUT,		0,	0xD3	},
+    /* Increment and decrement */
 
-    {	NULL,	"rl",		S_RL,		0,	0x10	},
-    {	NULL,	"rlc",		S_RL,		0,	0x00	},
-    {	NULL,	"rr",		S_RL,		0,	0x18	},
-    {	NULL,	"rrc",		S_RL,		0,	0x08	},
-    {	NULL,	"sla",		S_RL,		0,	0x20	},
-    {	NULL,	"sra",		S_RL,		0,	0x28	},
-    {	NULL,	"srl",		S_RL,		0,	0x38	},
+    {   NULL,   "inc",      S_INC,      0, 0x00     },
+    {   NULL,   "dec",      S_DEC,      0, 0x00     },
+    {   NULL,   "incw",     S_INCW,     0, 0x00     },
+    {   NULL,   "decw",     S_DECW,     0, 0x00     },
 
-    {	NULL,	"rst",		S_RST,		0,	0xC7	},
+    /* Shift and rotate */
 
-    {	NULL,	"im",		S_IM,		0,	0xED	},
+    {   NULL,   "ror",      S_ROR,      0, 0x00     },
+    {   NULL,   "rol",      S_ROL,      0, 0x00     },
+    {   NULL,   "rorc",     S_RORC,     0, 0x00     },
+    {   NULL,   "rolc",     S_ROLC,     0, 0x00     },
+    {   NULL,   "shr",      S_SHR,      0, 0x00     },
+    {   NULL,   "shl",      S_SHL,      0, 0x00     },
+    {   NULL,   "shrw",     S_SHRW,     0, 0x00     },
+    {   NULL,   "shlw",     S_SHLW,     0, 0x00     },
+    {   NULL,   "ror4",     S_ROR4,     0, 0x00     },
+    {   NULL,   "rol4",     S_ROL4,     0, 0x00     },
 
-    {	NULL,	"ccf",		S_INH1,		0,	0x3F	},
-    {	NULL,	"cpl",		S_INH1,		0,	0x2F	},
-    {	NULL,	"daa",		S_INH1,		0,	0x27	},
-    {	NULL,	"di",		S_INH1,		0,	0xF3	},
-    {	NULL,	"ei",		S_INH1,		0,	0xFB	},
-    {	NULL,	"exx",		S_INH1,		0,	0xD9	},
-    {	NULL,	"nop",		S_INH1,		0,	0x00	},
-    {	NULL,	"halt",		S_INH1,		0,	0x76	},
-    {	NULL,	"rla",		S_INH1,		0,	0x17	},
-    {	NULL,	"rlca",		S_INH1,		0,	0x07	},
-    {	NULL,	"rra",		S_INH1,		0,	0x1F	},
-    {	NULL,	"rrca",		S_INH1,		0,	0x0F	},
-    {	NULL,	"scf",		S_INH1,		0,	0x37	},
+    /* BCD */
 
-    {	NULL,	"cpd",		S_INH2,		0,	0xA9	},
-    {	NULL,	"cpdr",		S_INH2,		0,	0xB9	},
-    {	NULL,	"cpi",		S_INH2,		0,	0xA1	},
-    {	NULL,	"cpir",		S_INH2,		0,	0xB1	},
-    {	NULL,	"ind",		S_INH2,		0,	0xAA	},
-    {	NULL,	"indr",		S_INH2,		0,	0xBA	},
-    {	NULL,	"ini",		S_INH2,		0,	0xA2	},
-    {	NULL,	"inir",		S_INH2,		0,	0xB2	},
-    {	NULL,	"ldd",		S_INH2,		0,	0xA8	},
-    {	NULL,	"lddr",		S_INH2,		0,	0xB8	},
-    {	NULL,	"ldi",		S_INH2,		0,	0xA0	},
-    {	NULL,	"ldir",		S_INH2,		0,	0xB0	},
-    {	NULL,	"neg",		S_INH2,		0,	0x44	},
-    {	NULL,	"otdr",		S_INH2,		0,	0xBB	},
-    {	NULL,	"otir",		S_INH2,		0,	0xB3	},
-    {	NULL,	"outd",		S_INH2,		0,	0xAB	},
-    {	NULL,	"outi",		S_INH2,		0,	0xA3	},
-    {	NULL,	"reti",		S_INH2,		0,	0x4D	},
-    {	NULL,	"retn",		S_INH2,		0,	0x45	},
-    {	NULL,	"rld",		S_INH2,		0,	0x6F	},
-    {	NULL,	"rrd",		S_INH2,		0,	0x67	},
+    {   NULL,   "adj4",     S_ADJ4,     0, 0x04     },
 
-	/* 64180 */
+    /* Bit manipulation */
 
-    {	NULL,	"otdm",		X_INH2,		0,	0x8B	},
-    {	NULL,	"otdmr",	X_INH2,		0,	0x9B	},
-    {	NULL,	"otim",		X_INH2,		0,	0x83	},
-    {	NULL,	"otimr",	X_INH2,		0,	0x93	},
-    {	NULL,	"slp",		X_INH2,		0,	0x76	},
+    {   NULL,   "mov1",     S_MOV1,     0, 0x00     },
+    {   NULL,   "and1",     S_AND1,     0, 0x00     },
+    {   NULL,   "or1",      S_OR1,      0, 0x00     },
+    {   NULL,   "xor1",     S_XOR1,     0, 0x00     },
+    {   NULL,   "set1",     S_SET1,     0, 0x00     },
+    {   NULL,   "clr1",     S_CLR1,     0, 0x00     },
+    {   NULL,   "not1",     S_NOT1,     0, 0x00     },
 
-    {	NULL,	"in0",		X_IN,		0,	0x00	},
-    {	NULL,	"out0",		X_OUT,		0,	0x01	},
+    /* Call and return */
 
-    {	NULL,	"mlt",		X_MLT,		0,	0x4C	},
+    {   NULL,   "call",     S_CALL,     0, 0x00     },
+    {   NULL,   "callf",    S_CALLF,    0, 0x00     },
+    {   NULL,   "callt",    S_CALLT,    0, 0x00     },
+    {   NULL,   "brk",      S_BRK,      0, 0x5E     },
+    {   NULL,   "ret",      S_RET,      0, 0x56     },
+    {   NULL,   "reti",     S_RETI,     0, 0x57     },
 
-    {	NULL,	"tst",		X_TST,		0,	0x04	},
-    {	NULL,	"tstio",	X_TSTIO,	S_EOL,	0x74	}
+    /* Stack Operations */
+
+    {   NULL,   "push",     S_PUSH,     0, 0x00     },
+    {   NULL,   "pushu",    S_PUSHU,    0, 0x00     },
+    {   NULL,   "pop",      S_POP,      0, 0x00     },
+    {   NULL,   "popu",     S_POPU,     0, 0x00     },
+
+    /* Branching */
+
+    {   NULL,   "br",       S_BR,       0, 0x00     },
+    {   NULL,   "bc",       S_BC,       0, 0x00     },
+    {   NULL,   "bl",       S_BL,       0, 0x00     },
+    {   NULL,   "bnc",      S_BNC,      0, 0x00     },
+    {   NULL,   "bnl",      S_BNL,      0, 0x00     },
+    {   NULL,   "bz",       S_BZ,       0, 0x00     },
+    {   NULL,   "be",       S_BE,       0, 0x00     },
+    {   NULL,   "bnz",      S_BNZ,      0, 0x00     },
+    {   NULL,   "bne",      S_BNE,      0, 0x00     },
+    {   NULL,   "bv",       S_BV,       0, 0x00     },
+    {   NULL,   "bpe",      S_BPE,      0, 0x00     },
+    {   NULL,   "bnv",      S_BNV,      0, 0x00     },
+    {   NULL,   "bpo",      S_BPO,      0, 0x00     },
+    {   NULL,   "bn",       S_BN,       0, 0x00     },
+    {   NULL,   "bp",       S_BP,       0, 0x00     },
+    {   NULL,   "bgt",      S_BGT,      0, 0x00     },
+    {   NULL,   "bge",      S_BGE,      0, 0x00     },
+    {   NULL,   "blt",      S_BLT,      0, 0x00     },
+    {   NULL,   "ble",      S_BLE,      0, 0x00     },
+    {   NULL,   "bh",       S_BH,       0, 0x00     },
+    {   NULL,   "bnh",      S_BNH,      0, 0x00     },
+    {   NULL,   "bt",       S_BT,       0, 0x00     },
+    {   NULL,   "bf",       S_BF,       0, 0x00     },
+    {   NULL,   "btclr",    S_BTCLR,    0, 0x00     },
+    {   NULL,   "bfset",    S_BFSET,    0, 0x00     },
+    {   NULL,   "dbnz",     S_DBNZ,     0, 0x00     },
+
+    /* Context Switching */
+
+    {   NULL,   "brkcs",    S_BRKCS,    0, 0x00     },
+    {   NULL,   "retcs",    S_RETCS,    0, 0x00     },
+
+    /* String Operations */
+
+    {   NULL,   "movm",     S_MOVM,     0, 0x00     },
+    {   NULL,   "movbk",    S_MOVBK,    0, 0x00     },
+    {   NULL,   "xchm",     S_XCHM,     0, 0x00     },
+    {   NULL,   "xchbk",    S_XCHBK,    0, 0x00     },
+    {   NULL,   "cmpme",    S_CMPME,    0, 0x00     },
+    {   NULL,   "cmpbke",   S_CMPBKE,   0, 0x00     },
+    {   NULL,   "cmpmne",   S_CMPMNE,   0, 0x00     },
+    {   NULL,   "cmpbkne",  S_CMPBKNE,  0, 0x00     },
+    {   NULL,   "cmpmc",    S_CMPMC,    0, 0x00     },
+    {   NULL,   "cmpbkc",   S_CMPBKC,   0, 0x00     },
+    {   NULL,   "cmpmnc",   S_CMPMNC,   0, 0x00     },
+    {   NULL,   "cmpbknc",  S_CMPBKNC,  0, 0x00     },
+
+    /* CPU Control */
+
+    {   NULL,   "swrs",     S_SWRS,     0, 0x00     },
+    {   NULL,   "sel",      S_SEL,      0, 0x00     },
+    {   NULL,   "nop",      S_NOP,      0, 0x00     },
+    {   NULL,   "ei",       S_EI,       0, 0x4B     },
+    {   NULL,   "di",       S_DI,       0, 0x4A     },
+
+    /* UPD78310A */
+
+    /* no new instruction types, just a couple of additional addressing modes */
+
+    /* UPD78320 */
+    /* UPD78328 */
+    /* UPD78330 */
+
+	/* Adds 16-bit AX<->mem movw, 16-bit AX<->mem xchgw
+        sign extend, retb, retcsb, sfrp push/pop, port test,
+        signed mult, and three instructions changed or re-encoded.
+    */
+
+    /* UPD78350 */
+
+    /* Adds macw and table shift */
+
+    /* UPD78356 */
+    /* UPD78362A */
+    /* UPD78372 */
+
+    /* Adds signalling mac, correlation */
+
+    /* ------------------------------------------------------------ */
+
+    {   NULL,   "$$XXX$$",  S_END_OF_OPS,  S_EOL, 0x00 }
 };
+
+/****************************************************************************/
+
