@@ -440,8 +440,8 @@ struct	mne
 {
 	struct	mne *m_mp;	/* Hash link */
 	char	*m_id;		/* Mnemonic (JLH) */
-	char	m_type;		/* Mnemonic subtype */
-	char	m_flag;		/* Mnemonic flags */
+	int 	m_type;		/* Mnemonic subtype */
+	int     m_flag;		/* Mnemonic flags */
 	a_uint	m_valu;		/* Value */
 };
 
