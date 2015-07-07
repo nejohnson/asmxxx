@@ -26,6 +26,7 @@ all:	as1802		\
 	as6816		\
 	as740		\
 	as78k0s		\
+	as78k3		\
 	as8048		\
 	as8051		\
 	as8085		\
@@ -73,6 +74,7 @@ clean:
 	rm -f $(SRC6816)*.o
 	rm -f $(SRC740)*.o
 	rm -f $(SRC78K0S)*.o
+	rm -f $(SRC78K3)*.o
 	rm -f $(SRC8048)*.o
 	rm -f $(SRC8051)*.o
 	rm -f $(SRC8085)*.o
@@ -110,6 +112,7 @@ clean:
 	rm -f as6816
 	rm -f as740
 	rm -f as78k0s
+	rm -f as78k3
 	rm -f as8048
 	rm -f as8051
 	rm -f as8085
@@ -158,6 +161,7 @@ prep:
 	rm -f $(SRC6816)*.o
 	rm -f $(SRC740)*.o
 	rm -f $(SRC78K0S)*.o
+	rm -f $(SRC78K3)*.o
 	rm -f $(SRC8048)*.o
 	rm -f $(SRC8051)*.o
 	rm -f $(SRC8085)*.o
@@ -195,6 +199,7 @@ prep:
 	rm -f as6816
 	rm -f as740
 	rm -f as78k0s
+	rm -f as78k3
 	rm -f as8048
 	rm -f as8051
 	rm -f as8085
@@ -222,11 +227,11 @@ prep:
 
 
 CC=		gcc
-CCOPT=		-O3
+CCOPT=		-g
 CCFLAGS=	-Wall -funsigned-char $(CCOPT)
 
 LD=		gcc
-LDFLAGS=	-Wall
+LDFLAGS=	-g -Wall
 
 #  Set ASXBAS relative to this make file.
 
@@ -255,6 +260,7 @@ SRC6812=	$(ASXBAS)as6812/
 SRC6816=	$(ASXBAS)as6816/
 SRC740=		$(ASXBAS)as740/
 SRC78K0S=	$(ASXBAS)as78k0s/
+SRC78K3=	$(ASXBAS)as78k3/
 SRC8048=	$(ASXBAS)as8048/
 SRC8051=	$(ASXBAS)as8051/
 SRC8085=	$(ASXBAS)as8085/
@@ -576,6 +582,23 @@ as78k0s:	$(ASXXSRC) $(AS78KSRC)
 	cp as78k0s $(DSTEXE)as78k0s
 	strip $(DSTEXE)as78k0s
 	chmod 755 $(DSTEXE)as78k0s
+
+
+####################################################################
+# AS78K3
+####################################################################
+
+AS78K3 =         n78k3adr.o n78k3mch.o n78k3pst.o
+
+AS78K3SRC =      $(addprefix $(SRC78K3),$(AS78K3))
+
+$(AS78K3SRC):    $(SRCMISC)alloc.h $(SRCASX)asxxxx.h $(SRC78K3)n78k3.h
+
+as78k3:  $(ASXXSRC) $(AS78K3SRC)
+	$(LD) $(LDFLAGS) $(ASXXSRC) $(AS78K3SRC) -o as78k3
+	cp as78k3 $(DSTEXE)as78k3
+	#strip $(DSTEXE)as78k3
+	chmod 755 $(DSTEXE)as78k3
 
 
 ####################################################################
