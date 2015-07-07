@@ -1,7 +1,7 @@
 /* m16adr.c */
 
 /*
- *  Copyright (C) 1989-2009  Alan R. Baldwin
+ *  Copyright (C) 1989-2014  Alan R. Baldwin
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ struct expr *esp;
 	} else
 	if (c == ',') {
 		c = admode(xyz);
-		if (c && T_INDX) {
+		if (c & T_INDX) {
 			esp->e_mode = c;
 		} else {
 			aerr();
@@ -48,7 +48,7 @@ struct expr *esp;
 		if(admode(e) != 0) {
 			comma(1);
 			c = admode(xyz);
-			if (c && T_INDX) {
+			if (c & T_INDX) {
 				esp->e_mode = T_E_I | (c & 0x30);
 			} else {
 				aerr();
@@ -60,7 +60,7 @@ struct expr *esp;
 				comma(1);
 				tcp = ip;
 				if ((c = admode(xyz)) != 0) {
-					if (c && T_INDX) {
+					if (c & T_INDX) {
 						esp->e_mode = c;
 					} else {
 						aerr();

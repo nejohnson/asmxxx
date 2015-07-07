@@ -1,0 +1,145 @@
+<?xml version="1.0" ?>
+<XML_DIZ_INFO>
+	<MASTER_PAD_VERSION_INFO>
+		<MASTER_PAD_VERSION>3.01</MASTER_PAD_VERSION>
+		<MASTER_PAD_EDITOR>PADGen 3.0.1.38 http://www.padgen.org</MASTER_PAD_EDITOR>
+		<MASTER_PAD_INFO>Portable Application Description, or PAD for short, is a data set that is used by shareware authors to disseminate information to anyone interested in their software products. To find out more go to http://www.asp-shareware.org/pad</MASTER_PAD_INFO>
+	</MASTER_PAD_VERSION_INFO>
+	<Company_Info>
+		<Company_Name>Alan R. Baldwin</Company_Name>
+		<Address_1>721 Berkeley Street</Address_1>
+		<Address_2 />
+		<City_Town>Kent</City_Town>
+		<State_Province>Ohio</State_Province>
+		<Zip_Postal_Code>44240</Zip_Postal_Code>
+		<Country>USA</Country>
+		<Company_WebSite_URL>http://shop-pdp.net/</Company_WebSite_URL>
+		<Contact_Info>
+			<Author_First_Name>Alan</Author_First_Name>
+			<Author_Last_Name>Baldwin</Author_Last_Name>
+			<Author_Email>baldwin@kent.edu</Author_Email>
+			<Contact_First_Name>Alan</Contact_First_Name>
+			<Contact_Last_Name>Baldwin</Contact_Last_Name>
+			<Contact_Email>baldwin@shop-pdp.net</Contact_Email>
+		</Contact_Info>
+		<Support_Info>
+			<Sales_Email />
+			<Support_Email>baldwin@kent.edu</Support_Email>
+			<General_Email>baldwin@kent.edu</General_Email>
+			<Sales_Phone />
+			<Support_Phone />
+			<General_Phone />
+			<Fax_Phone />
+		</Support_Info>
+	</Company_Info>
+	<Program_Info>
+		<Program_Name>ASxxxx Cross Assemblers</Program_Name>
+		<Program_Version>5.10</Program_Version>
+		<Program_Release_Month>10</Program_Release_Month>
+		<Program_Release_Day>31</Program_Release_Day>
+		<Program_Release_Year>2014</Program_Release_Year>
+		<Program_Cost_Dollars />
+		<Program_Cost_Other_Code />
+		<Program_Cost_Other />
+		<Program_Type>Freeware</Program_Type>
+		<Program_Release_Status>Major Update</Program_Release_Status>
+		<Program_Install_Support>No Install Support</Program_Install_Support>
+		<Program_OS_Support>Win 3.1x,Win95,Win98,WinME,WinNT 3.x,WinNT 4.x,Windows2000,WinXP,Windows2003,Linux,MS-DOS</Program_OS_Support>
+		<Program_Language>English</Program_Language>
+		<Program_Change_Info>New Microprocessors</Program_Change_Info>
+		<Program_Specific_Category>Development Tools</Program_Specific_Category>
+		<Program_Category_Class>Development::Compilers &amp; Interpreters</Program_Category_Class>
+		<Program_System_Requirements />
+		<File_Info>
+			<File_Size_Bytes>14736933</File_Size_Bytes>
+			<File_Size_K>14391</File_Size_K>
+			<File_Size_MB>14.05</File_Size_MB>
+		</File_Info>
+		<Expire_Info>
+			<Has_Expire_Info>N</Has_Expire_Info>
+			<Expire_Count />
+			<Expire_Based_On>Days</Expire_Based_On>
+			<Expire_Other_Info />
+			<Expire_Month />
+			<Expire_Day />
+			<Expire_Year />
+		</Expire_Info>
+	</Program_Info>
+	<Program_Descriptions>
+		<English>
+			<Keywords>Cross Assembler, Macro Processor, Linker, Microprocessor</Keywords>
+			<Char_Desc_45>ASxxxx Cross Assemblers and Linker.</Char_Desc_45>
+			<Char_Desc_80>The  ASxxxx Cross Assemblers are  relocatable assemblers and a linker.</Char_Desc_80>
+			<Char_Desc_250>The  ASxxxx Cross Assemblers are a series of microprocessor relocatable assemblers for the 6500, 68xx, 8048, 8051, 8080(85), Z80 and other microprocessors. The companion relocating linker program is common to all the assemblers.</Char_Desc_250>
+			<Char_Desc_450>The ASxxxx Cross Assembler collection contains assemblers for the 1802, S2650, MPS430, 6100, 61860, 6500, 6800(6802/6808), 6801(hd6303), 6804, 6805, 68HC(S)08, 6809, 68HC11, 68HC(S)12, 68HC16, 740, 78K/0S, 8048,  8051, 8085(8080), AVR, DS8xCxxx, ez80, F2MC8L/FX, GameBoy(Z80), H8/3xx, Cypress PSoC (M8C),  PIC, Rabbit 2000/3000, SC/MP,  z8, and z80(hd64180) series microprocessors. The companion relocating linker program is common to all the assemblers.</Char_Desc_450>
+			<Char_Desc_2000>The  ASxxxx  assemblers are a series of microprocessor
+assemblers written in the C programming  language.   This  collection
+contains cross assemblers for the 1802, S2650, MPS430, 6100, 61860,
+6500, 6800(6802/6808), 6801(hd6303), 6804, 6805, 68HC(S)08,
+6809, 68HC11, 68HC(S)12, 68HC16, 740, 78K/0S, 8048, 8051, 8085(8080), AVR,
+DS8xCxxx, ez80, F2MC8L/FX, GameBoy(Z80), H8/3xx, Cypress PSoC (M8C), PIC, Rabbit
+2000/3000, SC/MP,  z8, and z80(hd64180) series microprocessors.   Each
+assembler  has  a  device specific  section  which includes:
+(1) device description, byte order, and file extension information,
+(2) a table of  assembler general  directives, special directives,
+assembler mnemonics and associated operation codes,
+(3) machine specific code  for processing  the  device  mnemonics, 
+addressing  modes, and special directives.  
+
+  The  assemblers  provide  the following features:  (1) alphabetized,
+formatted symbol table listings, (2) relocatable object modules,
+ (3) global symbols for linking object modules, (4) conditional
+assembly directives, (5) reusable  local  symbols,  (6) include-file processing,
+and (7) a macro processor.
+
+  The  companion program ASLINK is a relocating linker performing
+the following functions:  (1) bind multiple  object  modules
+into  a  single  memory  image,  (2) resolve inter-module symbol
+references,  (3)  resolve  undefined  symbols   from   specified
+libraries of object modules, (4) process absolute, relative,
+concatenated, and overlay attributes in data and program  sections,
+(5)  perform  byte and word program-counter relative (pc or pcr)
+addressing calculations, (6) define absolute  symbol  values  at
+link  time, (7) define absolute area base address values at link
+time, (8) produce Intel Hex,  Motorola S  record, or Tandy CoCo Disk
+Basic binary  output  files, (9)  produce  a  map of the linked memory,
+image, and (10) update the ASxxxx assembler listing files with the
+absolute linked addresses and data.</Char_Desc_2000>
+		</English>
+	</Program_Descriptions>
+	<Web_Info>
+		<Application_URLs>
+			<Application_Info_URL>http://shop-pdp.net/</Application_Info_URL>
+			<Application_Order_URL />
+			<Application_Screenshot_URL />
+			<Application_Icon_URL />
+			<Application_XML_File_URL />
+		</Application_URLs>
+		<Download_URLs>
+			<Primary_Download_URL>ftp://shop-pdp.net/av5p10.zip</Primary_Download_URL>
+			<Secondary_Download_URL />
+			<Additional_Download_URL_1 />
+			<Additional_Download_URL_2 />
+		</Download_URLs>
+	</Web_Info>
+	<Permissions>
+		<Distribution_Permissions>This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+</Distribution_Permissions>
+		<EULA>This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see &lt;http://www.gnu.org/licenses/>.
+</EULA>
+	</Permissions>
+</XML_DIZ_INFO>

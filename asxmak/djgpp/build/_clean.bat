@@ -3,6 +3,7 @@ del *.o
 del as1802
 del as2650
 del as430
+del as6100
 del as61860
 del as6500
 del as6800
@@ -15,6 +16,7 @@ del as6811
 del as6812
 del as6816
 del as740
+del as78k0s
 del as8048
 del as8051
 del as8085

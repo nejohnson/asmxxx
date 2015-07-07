@@ -1,7 +1,7 @@
 /* asout.c */
 
 /*
- *  Copyright (C) 1989-2009  Alan R. Baldwin
+ *  Copyright (C) 1989-2014  Alan R. Baldwin
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@
  *	The object module contains the following designators:  
  *
  *		[XDQ][HL][234]
- *			X	 Hexidecimal radix
+ *			X	 Hexadecimal radix
  *			D	 Decimal radix
  *			Q	 Octal radix
  *	
@@ -64,7 +64,7 @@
  *	(1)	Radix Line
  *
  * 	The  first  line  of  an object module contains the [XDQ][HL][234]
- *	format specifier (i.e.  XH2 indicates  a  hexidecimal  file  with
+ *	format specifier (i.e.  XH2 indicates  a  hexadecimal  file  with
  *	most significant byte first and 16-bit addresses) for the
  *	following designators.  
  *
@@ -259,6 +259,11 @@
  *		VOID	outr3b();
  *		VOID	outr4b();
  *		VOID	outrxb();
+ *		VOID	outrbm();
+ *		VOID	outrwm();
+ *		VOID	outr3bm();
+ *		VOID	outr4bm();
+ *		VOID	outrxbm();
  *		VOID	out_lb();
  *		VOID	out_lw();
  *		VOID	out_l3b();
@@ -967,6 +972,9 @@ int r;
 			*relp++ = r;
 			*relp++ = txtp - txt - a_bytes;
 			out_rw(n);
+		}
+		if (p_mask != 0xFF) {
+			out_txb(a_bytes,p_mask);
 		}
 		outbuf("P");
 	}
@@ -1856,28 +1864,28 @@ int
 lobyte(v)
 a_uint v;
 {
-	return ((int) v&0377);
+	return ((int) (v&0377));
 }
 
 int
 hibyte(v)
 a_uint v;
 {
-	return ((int) (v>>8)&0377);
+	return ((int) ((v>>8)&0377));
 }
 
 int
 thrdbyte(v)
 a_uint v;
 {
-	return ((int) (v>>16)&0377);
+	return ((int) ((v>>16)&0377));
 }
 
 int
 frthbyte(v)
 a_uint v;
 {
-	return ((int) (v>>24)&0377);
+	return ((int) ((v>>24)&0377));
 }
 
 

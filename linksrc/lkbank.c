@@ -1,7 +1,7 @@
 /* lkbank.c */
 
 /*
- *  Copyright (C) 2001-2009  Alan R. Baldwin
+ *  Copyright (C) 2001-2014  Alan R. Baldwin
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -557,7 +557,7 @@ lkfopen()
 					case 3: frmt = "bi3"; break;
 					case 4: frmt = "bi4"; break;
 					}
-					fp = afile(bp->b_fspec, frmt, 2);
+					fp = afile(bp->b_fspec, frmt, 3);
 				}
 				if (fp != stderr) {
 					if (fp == NULL) {

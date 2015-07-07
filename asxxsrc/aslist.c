@@ -1,7 +1,7 @@
 /* aslist.c */
 
 /*
- *  Copyright (C) 1989-2009  Alan R. Baldwin
+ *  Copyright (C) 1989-2014  Alan R. Baldwin
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -41,6 +41,7 @@
  *		VOID	list()
  *		VOID	list1()
  *		VOID	list2()
+ *		VOID	listhlr()
  *		VOID	slew()
  *		VOID	lstsym()
  *
@@ -55,22 +56,29 @@
  *	as hexadecimal, decimal, or octal.
  * 
  *	local variables:
- *		int	l_addr		laddr (int) truncated to 2-bytes
- *		int	n		number of bytes listed per line
+ *		int	a		beginning character position for option
+ *		int	b		number of character positions for option
+ *		char *	frmt		format string
+ *		int	i		for loop index
+ *		int	hlr_lst		listed parameters for current line
+ *		int	listing		LIST-NLIST state for current line
+ *		int	n		maximum number of bytes listed per line
  *		int	nb		computed number of assembled bytes
  *		int	nl		number of bytes listed on this line
+ *		int	op		output position in line
  *		int	paging		computed paging enable flag
  *		int *	wp		pointer to the assembled data bytes
  *		int *	wpt		pointer to the data byte mode
  *
  *	global variables:
  *		int	a_bytes		T line addressing size
+ *		struct asmf * asmc	Pointer to the current
+ *					source input structure
  *		int	cb[]		array of assembler output values
  *		int	cbt[]		array of assembler relocation types
  *					describing the data in cb[]
+ *		int	cflag		-c, cycle count flag
  *		int *	cp		pointer to assembler output array cb[]
- *		int *	cpt		pointer to assembler relocation type
- *					output array cbt[]
  *		char	eb[]		array of generated error codes
  *		char *	ep		pointer into error list
  *					array eb[]
@@ -81,6 +89,7 @@
  *		int	line		current assembler source line number
  *		int	lmode		listing mode
  *		int	lnlist		LIST-NLIST state
+ *		int	pflag		-p, paging flag
  *		int	srcline		source file line number
  *		int	uflag		-u, disable .list/.nlist processing
  *		int	xflag		-x, listing radix flag
@@ -88,6 +97,7 @@
  *	functions called:
  *		int	fprintf()	c_library
  *		VOID	list1()		aslist.c
+ *		VOID	listhlr()	aslist.c
  *		int	putc()		c_library
  *		VOID	slew()		asslist.c
  *
@@ -165,14 +175,45 @@ ee DDDDDDDDDD ddd ddd ddd ddd [nn]LLLLL *********	DECIMAL(32)
 		       DDDDDDDDDD
 */
 
+/*
+ *	The listing of the current assembler line is determined
+ *	by the enabled listing parameters, lnlist, and the current
+ *	listing mode, lmode.  The line is output to the listing
+ *	file on the fly, ie not bufferred.  Therefor the sequence
+ *	of the generated output is all important.  The following
+ *	table is organized as lmode versus lnlist parameters
+ *	ordered by location in the output listing line.
+ *
+ *				   lnlist
+ *		|-------------------------------------------------|
+ *	lmode	ERR	LOC	BIN	EQT	CYC	LIN	SRC
+ *	-----	---	---	---	---	---	---	---
+ *	SLIST						 *	 *
+ *	ALIST	 *	 *				 *	 *
+ *	BLIST	 *	 *				 *	 *
+ *	CLIST	 *	 *	 *		 *	 *	 *
+ *	ELIST	 *			 *		 *	 *
+ *
+ *	The generated HLR file, a hint file for the linker to
+ *	create an RST file, will contain the listing flags enabled
+ *	for each assembled line.
+ *
+ */
+
 VOID
 list()
 {
 	char *frmt, *wp;
 	int *wpt;
 	int n, nb, nl;
-	a_uint l_addr;
 	int listing, paging;
+	int hlr_lst;
+	int a, b, i, op;
+
+	/*
+	 * Get Correct Line Number
+	 */
+	line = srcline;
 
 	/*
 	 * Internal Listing
@@ -208,6 +249,19 @@ list()
 	 * Check NO-LIST Conditions
 	 */
 	if ((lfp == NULL) || (lmode == NLIST)) {
+		if ((cp - cb) || (rflag > 1)) {
+			listhlr(HLR_NLST, lmode, (int) (cp - cb));
+		}
+		return;
+	}
+
+	/*
+	 * Check Listing Nothing
+	 */
+	if (listing == LIST_NONE) {
+		if ((cp - cb) || (rflag > 1)) {
+			listhlr(HLR_NLST, lmode, (int) (cp - cb));
+		}
 		return;
 	}
 
@@ -222,39 +276,65 @@ list()
 	case SLIST:
 	case ALIST:
 	case BLIST:
-		if (!(listing & LIST_SRC)) {
-			return;
+		if (asmc->objtyp == T_MACRO) {
+			if (listing & LIST_ME) {
+				listing |= LIST_ASM;
+			} else {
+				if ((ep != eb) && (listing & LIST_ERR)) {
+					; /* Use listing mode in effect. */
+				} else {
+					if ((cp - cb) || (rflag > 1)) {
+						listhlr(HLR_NLST, lmode, (int) (cp - cb));
+					}
+					return;
+				}
+			}
 		}
+		break;
+
 	case ELIST:
-		if ((asmc->objtyp == T_MACRO) && !(listing & LIST_ME)) {
-			return;
+		if (asmc->objtyp == T_MACRO) {
+			if (listing & LIST_ME) {
+				listing |= LIST_ASM;
+			} else {
+				if ((ep != eb) && (listing & LIST_ERR)) {
+					; /* Use listing mode in effect. */
+				} else {
+					if ((cp - cb) || (rflag > 1)) {
+						listhlr(HLR_NLST, lmode, (int) (cp - cb));
+					}
+					return;
+				}
+			}
 		}
 		break;
 
 	case CLIST:
 		if (asmc->objtyp == T_MACRO) {
 			if (listing & LIST_ME) {
-				;
+				listing |= LIST_ASM;
 			} else
 			if ((listing & LIST_MEB) && ((int) (cp - cb))) {
-				listing = LIST_LOC | LIST_BIN;
+				listing = LIST_BIN;
 			} else {
-				return;
+				if ((ep != eb) && (listing & LIST_ERR)) {
+					; /* Use listing mode in effect. */
+				} else {
+					if ((cp - cb) || (rflag > 1)) {
+						listhlr(HLR_NLST, lmode, (int) (cp - cb));
+					}
+					return;
+				}
 			}
-		}
-		if (!(listing & LIST_ASM)) {
-			return;
 		}
 		break;
 
 	default:
+		if ((cp - cb) || (rflag > 1)) {
+			listhlr(HLR_NLST, lmode, (int) (cp - cb));
+		}
 		return;
 	}
-
-	/*
-	 * Get Correct Line Number
-	 */
-	line = srcline;
 
 	/*
 	 * Move to next line.
@@ -262,371 +342,431 @@ list()
 	slew(lfp, paging);
 
 	/*
+	 * Initialize parameters
+	 */
+	hlr_lst = LIST_NONE;
+	op = 0;
+	n = nb = nl = (int) (cp - cb);
+	wp = cb;
+	wpt = cbt;
+
+	/*
 	 * LIST_ERR - Output a maximum of NERR error codes with listing.
 	 */
 	if (listing & LIST_ERR) {
-		while (ep < &eb[NERR])
-			*ep++ = ' ';
-		fprintf(lfp, "%.2s", eb);
-	} else {
-		fprintf(lfp, "  ");
-	}
-
-	/*
-	 * SLIST
-	 * Source listing Option.
-	 */
-	if (lmode == SLIST) {
-		if (listing & LIST_LOC) {
-			switch(a_bytes) {
+		if (eb != ep) {
+			switch(lmode) {
 			default:
-			case 2: frmt = "%24s%5u %s\n"; break;
-			case 3:
-			case 4: frmt = "%32s%5u %s\n"; break;
-			}
-			fprintf(lfp, frmt, "", line, il);
-		} else {
-			switch(a_bytes) {
-			default:
-			case 2: frmt = "%29s %s\n"; break;
-			case 3:
-			case 4: frmt = "%37s %s\n"; break;
-			}
-			fprintf(lfp, frmt, "", il);
-		}
-		return;
-	}
-
-	/*
-	 * Truncate (int) to N-Bytes
-	 */
-	l_addr = laddr & a_mask;
-
-	/*
-	 * ELIST
-	 * Equate Listing Option
-	 */
-	if (lmode == ELIST) {
-		if (listing & LIST_EQT) {
-			switch (xflag) {
-			default:
-			case 0:		/* HEX */
-#ifdef	LONGINT
-				switch(a_bytes) {
-				default:
-				case 2: frmt = "%19s%04lX"; break;
-				case 3: frmt = "%25s%06lX"; break;
-				case 4: frmt = "%23s%08lX"; break;
-				}
-#else
-				switch(a_bytes) {
-				default:
-				case 2: frmt = "%19s%04X"; break;
-				case 3: frmt = "%25s%06X"; break;
-				case 4: frmt = "%23s%08X"; break;
-				}
-#endif
+			case SLIST:
 				break;
-
-			case 1:		/* OCTAL */
-#ifdef	LONGINT
-				switch(a_bytes) {
-				default:
-				case 2: frmt = "%17s%06lo"; break;
-				case 3: frmt = "%23s%08lo"; break;
-				case 4: frmt = "%20s%011lo"; break;
-				}
-#else
-				switch(a_bytes) {
-				default:
-				case 2: frmt = "%17s%06o"; break;
-				case 3: frmt = "%23s%08o"; break;
-				case 4: frmt = "%20s%011o"; break;
-				}
-#endif
-				break;
-
-			case 2:		/* DECIMAL */
-#ifdef	LONGINT
-				switch(a_bytes) {
-				default:
-				case 2: frmt = "%18s%05lu"; break;
-				case 3: frmt = "%23s%08lu"; break;
-				case 4: frmt = "%21s%010lu"; break;
-				}
-#else
-				switch(a_bytes) {
-				default:
-				case 2: frmt = "%18s%05u"; break;
-				case 3: frmt = "%23s%08u"; break;
-				case 4: frmt = "%21s%010u"; break;
-				}
-#endif
+			case ALIST:
+			case BLIST:
+			case CLIST:
+			case ELIST:
+				hlr_lst |= LIST_ERR;
+				while (ep < &eb[NERR])
+					*ep++ = ' ';
+				fprintf(lfp, "%.2s", eb);
+				op = 2;
 				break;
 			}
-			fprintf(lfp, frmt, "", l_addr);
-		} else {
-			switch(a_bytes) {
-			default:
-			case 2: frmt = "%23s"; break;
-			case 3:
-			case 4: frmt = "%31s"; break;
-			}
-			fprintf(lfp, frmt, "");
 		}
-		if ((listing & LIST_LIN) && (listing & LIST_SRC)) {
-			fprintf(lfp, " %5u %s\n", line, il);
-		} else
-		if (listing & LIST_LIN) {
-			fprintf(lfp, " %5u\n", line);
-		} else
-		if (listing & LIST_SRC) {
-			fprintf(lfp, " %5s %s\n", "", il);
-		} else {
-			fprintf(lfp, "\n");
-		}
-		return;
 	}
 
 	/*
 	 * LIST_LOC - Location Address
 	 */
 	if (listing & LIST_LOC) {
-		switch (xflag) {
+		switch(lmode) {
 		default:
-		case 0:		/* HEX */
-#ifdef	LONGINT
-			switch(a_bytes) {
-			default:
-			case 2: frmt = " %04lX"; break;
-			case 3: frmt = "    %06lX"; break;
-			case 4: frmt = "  %08lX"; break;
-			}
-#else
-			switch(a_bytes) {
-			default:
-			case 2: frmt = " %04X"; break;
-			case 3: frmt = "    %06X"; break;
-			case 4: frmt = "  %08X"; break;
-			}
-#endif
+		case SLIST:
+		case ELIST:
 			break;
-
-		case 1:		/* OCTAL */
-#ifdef	LONGINT
-			switch(a_bytes) {
-			default:
-			case 2: frmt = " %06lo"; break;
-			case 3: frmt = "   %08lo"; break;
-			case 4: frmt = "%011lo"; break;
-			}
-#else
-			switch(a_bytes) {
-			default:
-			case 2: frmt = " %06o"; break;
-			case 3: frmt = "   %08o"; break;
-			case 4: frmt = "%011o"; break;
-			}
-#endif
-			break;
-
-		case 2:		/* DECIMAL */
-#ifdef	LONGINT
-			switch(a_bytes) {
-			default:
-			case 2: frmt = "  %05lu"; break;
-			case 3: frmt = "   %08lu"; break;
-			case 4: frmt = " %010lu"; break;
-			}
-#else
-			switch(a_bytes) {
-			default:
-			case 2: frmt = "  %05u"; break;
-			case 3: frmt = "   %08u"; break;
-			case 4: frmt = " %010u"; break;
-			}
-#endif
-			break;
-		}
-		fprintf(lfp, frmt, l_addr);
-	} else {
-		switch(a_bytes) {
-		default:
-		case 2: frmt = "%5s"; break;
-		case 3:
-		case 4: frmt = "%10s"; break;
-		}
-		fprintf(lfp, frmt, "");
-	}
-
-	/*
-	 * ALIST/BLIST Listing Options
-	 */
-	if (lmode == ALIST || lmode == BLIST) {
-		if (listing & LIST_LIN) {
+		case ALIST:
+		case BLIST:
+		case CLIST:
+			hlr_lst |= LIST_LOC;
 			switch (xflag) {
 			default:
 			case 0:		/* HEX */
+#ifdef	LONGINT
 				switch(a_bytes) {
 				default:
-				case 2: frmt = "%19s%5u %s\n"; break;
-				case 3:
-				case 4: frmt = "%22s%5u %s\n"; break;
+				case 2: a = 3; b = 4; frmt = "%04lX"; break;
+				case 3: a = 6; b = 6; frmt = "%06lX"; break;
+				case 4: a = 4; b = 8; frmt = "%08lX"; break;
 				}
+#else
+				switch(a_bytes) {
+				default:
+				case 2: a = 3; b = 4; frmt = "%04X"; break;
+				case 3: a = 6; b = 6; frmt = "%06X"; break;
+				case 4: a = 4; b = 8; frmt = "%08X"; break;
+				}
+#endif
 				break;
 
 			case 1:		/* OCTAL */
+#ifdef	LONGINT
 				switch(a_bytes) {
 				default:
-				case 2: frmt = "%17s%5u %s\n"; break;
-				case 3:
-				case 4: frmt = "%21s%5u %s\n"; break;
+				case 2: a = 3; b = 6; frmt = "%06lo"; break;
+				case 3: a = 5; b = 8; frmt = "%08lo"; break;
+				case 4: a = 2; b = 11; frmt = "%011lo"; break;
 				}
+#else
+				switch(a_bytes) {
+				default:
+				case 2: a = 3; b = 6; frmt = "%06o"; break;
+				case 3: a = 5; b = 8; frmt = "%08o"; break;
+				case 4: a = 2; b = 11; frmt = "%011o"; break;
+				}
+#endif
 				break;
 
 			case 2:		/* DECIMAL */
+#ifdef	LONGINT
 				switch(a_bytes) {
 				default:
-				case 2: frmt = "%17s%5u %s\n"; break;
-				case 3:
-				case 4: frmt = "%21s%5u %s\n"; break;
+				case 2: a = 4; b = 5; frmt = "%05lu"; break;
+				case 3: a = 5; b = 8; frmt = "%08lu"; break;
+				case 4: a = 3; b = 10; frmt = "%010lu"; break;
 				}
+#else
+				switch(a_bytes) {
+				default:
+				case 2: a = 4; b = 5; frmt = "%05u"; break;
+				case 3: a = 5; b = 8; frmt = "%08u"; break;
+				case 4: a = 3; b = 10; frmt = "%010u"; break;
+				}
+#endif
+				break;
 			}
-			fprintf(lfp, frmt, "", line, il);
-		} else {
+			for (i=0; i<(a-op); i++) {
+				fprintf(lfp, " ");
+			}
+			op = a;
+			fprintf(lfp, frmt, laddr & a_mask);
+			op += b;
+		}
+	}
+
+	/*
+	 * LIST_BIN - List binary output
+	 */
+	if (listing & LIST_BIN) {
+		if (nb != 0) {
+			switch(lmode) {
+			default:
+			case SLIST:
+			case ALIST:
+			case BLIST:
+			case ELIST:
+				break;
+			case CLIST:
+				hlr_lst |= LIST_BIN;
+				switch (xflag) {
+				default:
+				case 0:		/* HEX */
+					switch(a_bytes) {
+					default:
+					case 2: a = 7; b = 3; n = 6; break;
+					case 3:
+					case 4: a = 12; b = 3; n = 7; break;
+					}
+					break;
+
+				case 1:		/* OCTAL */
+					switch(a_bytes) {
+					default:
+					case 2: a = 9; b = 4; n = 4; break;
+					case 3:
+					case 4: a = 13; b = 4; n = 5; break;
+					}
+					break;
+
+				case 2:		/* DECIMAL */
+					switch(a_bytes) {
+					default:
+					case 2: a = 9; b = 4; n = 4; break;
+					case 3:
+					case 4: a = 13; b = 4; n = 5; break;
+					}
+					break;
+				}
+				for (i=0; i<(a-op); i++) {
+					fprintf(lfp, " ");
+				}
+				op = a;
+
+				/*
+				 * If we list cycles decrease maximum bytes on this line.
+				 */
+				nl = (!cflag && !(opcycles & OPCY_NONE) && (listing & LIST_CYC)) ? (n-1) : n;
+				nl = (nb > nl) ? nl : nb;
+	 			list1(wp, wpt, nl);
+				wp += nl;
+				wpt += nl;
+				op += (nl * b);
+			}
+		}
+	}
+
+	/*
+	 * LIST_EQT - Equate Listing Option
+	 */
+	if (listing & LIST_EQT) {
+		switch(lmode) {
+		default:
+		case SLIST:
+		case ALIST:
+		case BLIST:
+		case CLIST:
+			break;
+		case ELIST:
+			hlr_lst |= LIST_EQT;
 			switch (xflag) {
 			default:
 			case 0:		/* HEX */
+#ifdef	LONGINT
 				switch(a_bytes) {
 				default:
-				case 2: frmt = "%19s%5s %s\n"; break;
-				case 3:
-				case 4: frmt = "%22s%5s %s\n"; break;
+				case 2: a = 21; b = 4; frmt = "%04lX"; break;
+				case 3: a = 27; b = 6; frmt = "%06lX"; break;
+				case 4: a = 25; b = 8; frmt = "%08lX"; break;
 				}
+#else
+				switch(a_bytes) {
+				default:
+				case 2: a = 21; b = 4; frmt = "%04X"; break;
+				case 3: a = 27; b = 6; frmt = "%06X"; break;
+				case 4: a = 25; b = 8; frmt = "%08X"; break;
+				}
+#endif
 				break;
 
 			case 1:		/* OCTAL */
+#ifdef	LONGINT
 				switch(a_bytes) {
 				default:
-				case 2: frmt = "%17s%5s %s\n"; break;
-				case 3:
-				case 4: frmt = "%21s%5s %s\n"; break;
+				case 2: a = 19; b = 6; frmt = "%06lo"; break;
+				case 3: a = 25; b = 8; frmt = "%08lo"; break;
+				case 4: a = 22; b = 11; frmt = "%011lo"; break;
 				}
+#else
+				switch(a_bytes) {
+				default:
+				case 2: a = 19; b = 6; frmt = "%06o"; break;
+				case 3: a = 25; b = 8; frmt = "%08o"; break;
+				case 4: a = 22; b = 11; frmt = "%011o"; break;
+				}
+#endif
 				break;
 
 			case 2:		/* DECIMAL */
+#ifdef	LONGINT
 				switch(a_bytes) {
 				default:
-				case 2: frmt = "%17s%5s %s\n"; break;
-				case 3:
-				case 4: frmt = "%21s%5s %s\n"; break;
+				case 2: a = 20; b = 5; frmt = "%05lu"; break;
+				case 3: a = 25; b = 8; frmt = "%08lu"; break;
+				case 4: a = 23; b = 10; frmt = "%%010lu"; break;
 				}
+#else
+				switch(a_bytes) {
+				default:
+				case 2: a = 20; b = 5; frmt = "%05u"; break;
+				case 3: a = 25; b = 8; frmt = "%08u"; break;
+				case 4: a = 23; b = 10; frmt = "%010u"; break;
+				}
+#endif
 				break;
 			}
-			fprintf(lfp, frmt, "", "", il);
+			for (i=0; i<(a-op); i++) {
+				fprintf(lfp, " ");
+			}
+			op = a;
+			fprintf(lfp, frmt, laddr & a_mask);
+			op += b;
+			break;
 		}
-		return;
 	}
 
 	/*
-	 * LIST_BIN - Binary Listing Option
-	 * LIST_CYC - Opcode Cycles Option
-	 * LIST_LIN - Line Number Option
-	 * LIST_SRC - Source Listing Option
+	 * LIST_CYC - Output opcode cycle count with listing.
 	 */
-	if (!(listing & (LIST_BIN | LIST_CYC | LIST_LIN | LIST_SRC))) {
-		fprintf(lfp, "\n");
-		return;
+	if (listing & LIST_CYC) {
+		if (!cflag && !(opcycles & OPCY_NONE)) {
+			switch(lmode) {
+			default:
+			case SLIST:
+			case ALIST:
+			case BLIST:
+			case ELIST:
+				break;
+			case CLIST:
+				hlr_lst |= LIST_CYC;
+				switch(a_bytes) {
+				default:
+				case 2: a = 22; b = 4; break;
+				case 3:
+				case 4: a = 30; b = 4; break;
+				}
+				for (i=0; i<(a-op); i++) {
+					fprintf(lfp, " ");
+				}
+				op = a;
+				fprintf(lfp, "%c%2d%c", CYCNT_BGN, opcycles, CYCNT_END);
+				op += b;
+				break;
+			}
+		}
 	}
 
 	/*
-	 * Format
+	 * LIST_LIN - Output line number with listing.
 	 */
-	switch (xflag) {
-	default:
-	case 0:		/* HEX */
-		switch(a_bytes) {
+	if (listing & LIST_LIN) {
+		switch(lmode) {
 		default:
-		case 2: n = 6; frmt = "%7s"; break;
-		case 3:
-		case 4: n = 7; frmt = "%12s"; break;
-		}
-		break;
-
-	case 1:		/* OCTAL */
-		switch(a_bytes) {
-		default:
-		case 2: n = 4; frmt = "%9s"; break;
-		case 3:
-		case 4: n = 5; frmt = "%13s"; break;
-		}
-		break;
-
-	case 2:		/* DECIMAL */
-		switch(a_bytes) {
-		default:
-		case 2: n = 4; frmt = "%9s"; break;
-		case 3:
-		case 4: n = 5; frmt = "%13s"; break;
-		}
-		break;
-	}
-
-	wp = cb;
-	wpt = cbt;
-	nb = (int) (cp - cb);
-
-	/*
-	 * If we list cycles, decrease max. bytes on first line.
-	 */
-	nl = (!cflag && !(opcycles & OPCY_NONE) && (listing & LIST_CYC)) ? (n-1) : n;
-
-	/*
-	 * First line of output for this source line with data.
-	 */
-	if (listing & (LIST_LIN | LIST_SRC)) {
-		list1(wp, wpt, nb, nl, 1, listing);
-		if ((listing & LIST_LIN) && (listing & LIST_SRC)) {
-			fprintf(lfp, "%5u %s", line, il);
-		} else
-		if (listing & LIST_LIN) {
+			break;
+		case SLIST:
+		case ALIST:
+		case BLIST:
+		case ELIST:
+		case CLIST:
+			hlr_lst |= LIST_LIN;
+			switch(a_bytes) {
+			default:
+			case 2: a = 26; b = 5; break;
+			case 3:
+			case 4: a = 34; b = 5; break;
+			}
+			for (i=0; i<(a-op); i++) {
+				fprintf(lfp, " ");
+			}
+			op = a;
 			fprintf(lfp, "%5u", line);
-		} else
-		if (listing & LIST_SRC) {
-			fprintf(lfp, "%5s %s", "", il);
+			op += b;
+			break;
 		}
-	} else {
-		list1(wp, wpt, nb, nl, listing & LIST_CYC, listing);
 	}
+
+	/*
+	 * LIST_SRC - Output assembler source with listing.
+	 */
+	if (listing & LIST_SRC) {
+		switch(lmode) {
+		default:
+			break;
+		case SLIST:
+		case ALIST:
+		case BLIST:
+		case ELIST:
+		case CLIST:
+			hlr_lst |= LIST_SRC;
+			switch(a_bytes) {
+			default:
+			case 2: a = 32; break;
+			case 3:
+			case 4: a = 40; break;
+			}
+			for (i=0; i<(a-op); i++) {
+				fprintf(lfp, " ");
+			}
+			fprintf(lfp, "%s", il);
+			break;
+		}
+	}
+
+	/*
+	 * Check Listing Nothing
+	 */
+	if (hlr_lst == LIST_NONE) {
+		if ((cp - cb) || (rflag > 1)) {
+			listhlr(HLR_NLST, lmode, (int) (cp - cb));
+		}
+		return;
+	}
+
+	/*
+	 * Listing output line complete
+	 */
 	fprintf(lfp, "\n");
+	if (!(hlr_lst & LIST_BIN)) {
+		listhlr(hlr_lst, lmode, (int) (cp - cb));
+		return;
+	} else
+	if (nb == 0) {
+		listhlr(hlr_lst, lmode, 0);
+		return;
+	} else {
+		listhlr(hlr_lst, lmode, nl);
+		nb = (nb > nl) ? (nb - nl) : 0;
+		if (nb == 0) {
+			return;
+		}
+	}
 
 	/*
 	 * Subsequent lines of output if more data.
 	 */
 	if (listing & LIST_BIN) {
-		while ((nb - nl) > 0) {
+		/*
+		 * Format
+		 */
+		switch (xflag) {
+		default:
+		case 0:		/* HEX */
+			switch(a_bytes) {
+			default:
+			case 2: frmt = "%7s"; break;
+			case 3:
+			case 4: frmt = "%12s"; break;
+			}
+			break;
+
+		case 1:		/* OCTAL */
+			switch(a_bytes) {
+			default:
+			case 2: frmt = "%9s"; break;
+			case 3:
+			case 4: frmt = "%13s"; break;
+			}
+			break;
+
+		case 2:		/* DECIMAL */
+			switch(a_bytes) {
+			default:
+			case 2: frmt = "%9s"; break;
+			case 3:
+			case 4: frmt = "%13s"; break;
+			}
+			break;
+		}
+
+		while (nb > 0) {
+			nl = (nb > n) ? n : nb;
+			slew(lfp, paging);
+			fprintf(lfp, frmt, "");
+			list1(wp, wpt, nl);
+			putc('\n', lfp);
+			listhlr(LIST_BIN, lmode, nl);
 			nb -= nl;
 			wp += nl;
 			wpt += nl;
-			nl = n;
-			slew(lfp, paging);
-			fprintf(lfp, frmt, "");
-			list1(wp, wpt, nb, nl, 0, listing);
-			putc('\n', lfp);
 		}
 	}
 }
 
-/*)Function	VOID	list1(wp, wpt, nw, n, f, g)
+/*)Function	VOID	list1(wp, wpt, n)
  *
- *		int	f		fill blank fields (1)
- *		int	n		number of bytes listed per line
- *		int	nb		number of data bytes
+ *		int	nb		number of bytes listed per line
  *		int *	wp		pointer to data bytes
  *		int *	wpt		pointer to data byte mode
  *
  *	local variables:
  *		int	i		loop counter
+ *		char *	frmt		data format
  *
  *	global variables:
  *		int	xflag		-x, listing radix flag
@@ -640,77 +780,46 @@ list()
  */
 
 VOID
-list1(wp, wpt, nb, n, f, g)
+list1(wp, wpt, nb)
 char *wp;
-int *wpt, nb, n, f, g;
+int *wpt, nb;
 {
 	int i;
-	char *frmt1, *frmt2;
+	char *frmt;
 
 	switch (xflag) {
 	default:
 	case 0:		/* HEX */
-		frmt1 = "%02X";
-		frmt2 = "   ";
+		frmt = "%02X";
 		break;
 
 	case 1:		/* OCTAL */
-		frmt1 = "%03o";
-		frmt2 = "    ";
+		frmt = "%03o";
 		break;
 
 	case 2:		/* DECIMAL */
-		frmt1 = "%03u";
-		frmt2 = "    ";
+		frmt = "%03u";
 		break;
 	}
-
-	if (nb > n)
-		nb = n;
 
 	/*
 	 * Output bytes.
 	 */
 	for (i=0; i<nb; ++i) {
-		if (g & LIST_BIN) {
-			list2(*wpt++);
-			fprintf(lfp, frmt1, (*wp++)&0377);
-		} else {
-			fprintf(lfp, "%s", frmt2);
-		}
-	}
-
-	/*
-	 * Output blanks if required.
-	 */
-	if (f) {
-		while (i++ < n) {
-			fprintf(lfp, "%s", frmt2);
-		}
-	}
-
-	/*
-	 * If we list cycles, put them out, first line only
-	 */
-	if (f && (g & LIST_CYC) && !cflag && !(opcycles & OPCY_NONE)) {
-		fprintf(lfp, "%s%c%2d%c",
-			(xflag != 0) ? " " : "", CYCNT_BGN, opcycles, CYCNT_END);
-	} else
-	if (f) {
-		fprintf(lfp, " ");
+		list2(*wpt++);
+		fprintf(lfp, frmt, (*wp++)&0377);
 	}
 }
 
-/*)Function	VOID	list2(wpt)
+/*)Function	VOID	list2(t)
  *
- *		int *	wpt		pointer to relocation mode
+ *		int	t		relocation mode
  *
  *	The function list2() outputs the selected
  *	relocation flag as specified by fflag.
  *
  *	local variables:
  *		int	c		relocation flag character
- *		int	t		relocation mode
  *
  *	global variables:
  *		int	fflag		-f(f), relocations flagged flag
@@ -775,6 +884,71 @@ int t;
 	putc(c, lfp);
 }
 
+/*)Function	VOID	listhlr(hlr_lst, hlr_mode, nb)
+ *
+ *		int	hlr_lst		output listing flags for src line
+ *		int	hlr_mode	output listing mode for src line
+ *		int	hlr_nb		number of bytes output for this line
+ *
+ *	The function listhlr() outputs
+ *	the hints for this assembled line.
+ *
+ *	local variables:
+ *		char *	frmt		output format specifier
+ *
+ *	global variables:
+ *		char *	eqt_area	.area of equate evaluation
+ *		FILE *	hfp		HLR file handle
+ *		int	rflag		output line number in hint file
+ *		int	xflag		listing radix flag
+ *
+ *	functions called:
+ *		int	fprintf()		c_library
+ *
+ *	side effects:
+ *		A line of hint parameters
+ *		is written to the HLR file.
+ */
+
+VOID
+listhlr(hlr_lst, hlr_mode, hlr_nb)
+int hlr_lst;
+int hlr_mode;
+int hlr_nb;
+{
+	char *frmt;
+
+	if (hfp == NULL)
+		return;
+
+	if (rflag) {
+		fprintf(hfp, "  %5u", line);
+	}
+
+	switch (xflag) {
+	default:
+	case 0:		/* HEX */
+		frmt = " %02X %02X %02X";
+		break;
+
+	case 1:		/* OCTAL */
+		frmt = " %03o %03o %03o";
+		break;
+
+	case 2:		/* DECIMAL */
+		frmt = " %03u %03u %03u";
+		break;
+	}
+	fprintf(hfp, frmt, hlr_lst, hlr_mode, hlr_nb);
+	if (lmode == ELIST) {
+		if (eqt_area != NULL) {
+			fprintf(hfp, " %s", eqt_area);
+		}
+	}
+	fprintf(hfp, "\n");
+}
+
+
 /*)Function	VOID	slew(fp, flag)
  *
  *		FILE *	fp		file handle for listing
@@ -783,21 +957,27 @@ int t;
  *	The function slew() increments the page line count.
  *	If the page overflows and pagination is enabled:
  *		1)	put out a page skip,
- *		2)	a title,
- *		3)	a subtitle,
- *		4)	and reset the line count.
+ *		2)	assembler info and page number
+ *		3)	Number Type and current time
+ *		4)	a title,
+ *		5)	a subtitle,
+ *		6)	and reset the line count.
  *
  *	local variables:
- *		none
+ *		char *	frmt		string format
+ *		char	np[]		new page string
+ *		char	tp[]		temporary string	
  *
  *	global variables:
  *		char	cpu[]		cpu type string
+ *		time_t	curtim		current time string pointer
  *		int	lop		current line number on page
  *		int	page		current page number
  *		char	stb[]		Subtitle string buffer
  *		char	tb[]		Title string buffer
  *
  *	functions called:
+ *		char *	ctime()		c_library
  *		int	fprintf()	c_library
  *
  *	side effects:
@@ -811,20 +991,59 @@ FILE *fp;
 int flag;
 {
 	char *frmt;
+	char np[80];
+	char tp[80];
 
 	if (lop++ >= NLPP) {
 		if (flag) {
-			fprintf(fp, "\fASxxxx Assembler %s  (%s), page %u.\n",
-				VERSION, cpu, ++page);
+			/*
+			 *12345678901234567890123456789012345678901234567890123456789012345678901234567890
+			 *ASxxxx Assembler Vxx.xx  (Motorola 6809)                                Page 1
+			 */
+		 	/*
+			 * Total string length is 78 characters.
+			 */
+			sprintf(tp, "ASxxxx Assembler %s  (%s)", VERSION, cpu);
+			sprintf(np, "%-78s", tp);
+			/*
+			 * Right justify page number in string.
+			 */
+			sprintf(tp, "Page %u", ++page);
+			strncpy(&np[strlen(np) - strlen(tp)], tp, strlen(tp));
+			/*
+			 * Output string.
+			 */
+			fprintf(fp, "\f%s\n", np);
+			/*
+			 *12345678901234567890123456789012345678901234567890123456789012345678901234567890
+			 *Hexadecimal [16-Bits]                                 Sun Sep 15 17:22:25 2013
+			 */
+		 	/*
+			 * Total string length is 78 characters.
+			 */
 			switch(xflag) {
 			default:
-			case 0:	frmt = "Hexidecimal [%d-Bits]\n"; break;
-			case 1:	frmt = "Octal [%d-Bits]\n"; break;
-			case 2:	frmt = "Decimal [%d-Bits]\n"; break;
+			case 0:	frmt = "Hexadecimal [%d-Bits]"; break;
+			case 1:	frmt = "Octal [%d-Bits]"; break;
+			case 2:	frmt = "Decimal [%d-Bits]"; break;
 			}
-			fprintf(fp, frmt, 8 * a_bytes);
+			sprintf(tp, frmt, 8 * a_bytes);
+			sprintf(np, "%-78s", tp);
+			/*
+			 * Right justify current time in string.
+			 */
+			strncpy(&np[strlen(np) - 24], ctime(&curtim), 24);
+			/*
+			 * Output string.
+			 */
+			fprintf(fp, "%s\n", np);
 			fprintf(fp, "%s\n", tb);
 			fprintf(fp, "%s\n\n", stb);
+			if (fp == lfp) {
+				for (lop=1; lop<6; lop++) {
+					listhlr(LIST_SRC, SLIST, 0);
+				}
+			}
 			lop = 6;
 		} else {
 			lop = 1;
@@ -1235,3 +1454,5 @@ atable:
 	}
 	putc('\n', fp);
 }
+
+

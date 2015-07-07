@@ -1,10 +1,10 @@
 82569
-R:\asxv5pxx\asxmak\symantec\build\as1802.prj
+R:\ASXV5PXX\ASXMAK\SYMANTEC\BUILD\as1802.prj
 as1802.OPN
 novcs
 as1802.DEF
 6
-1150355460
+1150359060
 0 0 0 0 0 "..\..\..\AS1802\1802mch.c"
 0 0 0 0 0 "..\..\..\AS1802\1802pst.c"
 0 0 0 0 0 "..\..\..\ASXXSRC\asdata.c"
@@ -24,3 +24,4 @@ as1802.DEF
 0 -1 0 0 0 "C:\SC\INCLUDE\setjmp.h"
 0 -1 0 0 0 "C:\SC\INCLUDE\string.h"
 0 -1 0 0 0 "..\..\..\AS1802\1802.h"
+0 -1 0 0 0 "C:\SC\INCLUDE\time.h"

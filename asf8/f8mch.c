@@ -1,7 +1,7 @@
 /* f8mch.c */
 
 /*
- *  Copyright (C) 2012  Alan R. Baldwin
+ *  Copyright (C) 2012-2014  Alan R. Baldwin
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@
 #include "asxxxx.h"
 #include "f8.h"
 
-char	*cpu	= "Fairchild F8";
+char	*cpu	= "Fairchild F8 / Mostek 3870";
 char	*dsft	= "asm";
 
 /*

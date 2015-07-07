@@ -1,7 +1,7 @@
 /* lkmain.c */
 
 /*
- *  Copyright (C) 1989-2012  Alan R. Baldwin
+ *  Copyright (C) 1989-2014  Alan R. Baldwin
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -85,6 +85,7 @@
  *				 	current lfile structure
  *		char	ctype[]		array of character types, one per
  *				 	ASCII character
+ *		time_t	curtim		current time string pointer
  *		lfile	*filep	 	The pointer *filep points to the
  *				 	beginning of a linked list of
  *				 	lfile structures.
@@ -104,6 +105,7 @@
  *				 	for high byte format
  *		FILE	*ofpl		Output file handle
  *				 	for low byte format
+ *		a_uint	p_mask		memory page length mask
  *		int	pass		linker pass number
  *		int	pflag		print linker command file flag
  *		int	radix		current number conversion radix
@@ -132,6 +134,7 @@
  *		VOID	setgbl()	lkmain.c
  *		char *	sprintf()	c_library
  *		VOID	symdef()	lksym.c
+ *		time_t	time()		c_library
  *		VOID	usage()		lkmain.c
  *
  *	side effects:
@@ -241,6 +244,7 @@ char *argv[];
 	}
 
 	syminit();
+	curtim = time(NULL);
 
 #if SDCDB
 	/*
@@ -254,6 +258,7 @@ char *argv[];
 		sfp = NULL;
 		filep = linkp->f_flp;
 		hp = NULL;
+		p_mask = DEFAULT_PMASK;
 		radix = 10;
 
 		while (nxtline()) {
@@ -379,6 +384,7 @@ int i;
 	if (rfp != NULL) fclose(rfp);
 	if (sfp != NULL) { if (sfp != stdin) fclose(sfp); }
 	if (tfp != NULL) fclose(tfp);
+	if (hfp != NULL) fclose(hfp);
 #if SDCDB
 	if (yfp != NULL) fclose(yfp);
 #endif
@@ -396,18 +402,22 @@ int i;
  *		int	c		first non blank character of a line
  *
  *	global variables:
+ *		int	a_bytes		T Line address bytes
+ *		a_uint	a_mask		address mask
  *		head	*headp		The pointer to the first
  *				 	head structure of a linked list
+ *		int	hilo		Byte ordering
  *		head	*hp		Pointer to the current
  *				 	head structure
- *		sdp	sdp		Base Paged structure
- *		int	a_bytes		T Line address bytes
- *		int	hilo		Byte ordering
  *		int	pass		linker pass number
  *		int	radix		current number conversion radix
+ *		sdp	sdp		Base Paged structure
+ *		a_uint	s_mask		signed value bit test
+ *		a_auit	v_mask		value mask
  *
  *	functions called:
  *		int	get()		lklex.c
+ *		int	getnb()		lklex.c
  *		VOID	module()	lkhead.c
  *		VOID	newarea()	lkarea.c
  *		VOID	newhead()	lkhead.c
@@ -415,6 +425,7 @@ int i;
  *		sym *	newsym()	lksym.c
  *		VOID	NoICEmagic()	lknoice.c
  *		VOID	reloc()		lkreloc.c
+ *		int	unget()		lklex.c
  *
  *	side effects:
  *		Head, area, and symbol structures are created and
@@ -741,6 +752,7 @@ map()
  *	global variables:
  *		char	ctype[]		array of character types, one per
  *				 	ASCII character
+ *		int	jflag		NoICE Debug output flag
  *		lfile	*lfp		pointer to current lfile structure
  *				 	being processed by parse()
  *		lfile	*linkp		pointer to first lfile structure
@@ -752,8 +764,9 @@ map()
  *		int	pflag		print linker command file flag
  *		FILE *	stderr		c_library
  *		int	uflag		Relocated listing flag
- *		int	xflag		Map file radix type flag
  *		int	wflag		Wide listing format
+ *		int	xflag		Map file radix type flag
+ *		int	yflag		SDCC Debug output flag
  *		int	zflag		Enable symbol case sensitivity
  *
  *	Functions called:
@@ -766,9 +779,12 @@ map()
  *		VOID	getfid()	lklex.c
  *		int	get()		lklex.c
  *		int	getnb()		lklex.c
+ *		int	getnb()		lklex.c
  *		VOID	lkexit()	lkmain.c
+ *		char *	new()		lksym.c
  *		char *	strsto()	lksym.c
  *		int	strlen()	c_library
+ *		VOID	unget()		lklex.c
  *
  *	side effects:
  *		Various linker flags are updated and the linked
@@ -1004,7 +1020,6 @@ parse()
  *	Functions called:
  *		int	fclose()	c_library
  *		int	fprintf()	c_library
- *		VOID	getfid()	lklex.c
  *		int	nxtline()	lklex.c
  *		int	parse()		lkmain.c
  *
@@ -1097,7 +1112,6 @@ bassav()
  *				 	globl structure
  *		char	*ip		pointer into the REL file
  *				 	text line in ib[]
- *		int	lkerr		error flag
  *
  *	functions called:
  *		int	getnb()		lklex.c
@@ -1202,7 +1216,11 @@ setgbl()
  *		char *	ft		file type string
  *		int	wf		0 ==>> read
  *					1 ==>> write
- *					2 ==>> binary write
+ *					2 ==>> binary read
+ *					3 ==>> binary write
+ *
+ *					add 4 to the wf code to
+ *					suppress the error reporting
  *
  *	The function afile() opens a file for reading or writing.
  *		(1)	If the file type specification string ft
@@ -1221,9 +1239,9 @@ setgbl()
  *	local variables:
  *		int	c		character value
  *		FILE *	fp		filehandle for opened file
+ *		char *	frmt		file access format string
  *		char *	p1		pointer to filespec string fn
  *		char *	p2		pointer to filespec string fb
- *		char *	p3		pointer to filetype string ft
  *
  *	global variables:
  *		char	afspec[]	constructed file specification string
@@ -1288,21 +1306,27 @@ int wf;
 	*p1++ = 0;
 
 	/*
-	 * Select Read/Write/Binary Write
+	 * Select (Binary) Read/Write
 	 */
-	switch(wf) {
+	switch(wf % 4) {
 	default:
 	case 0:	frmt = "r";	break;
 	case 1:	frmt = "w";	break;
 #ifdef	DECUS
-	case 2:	frmt = "wn";	break;
+	case 2:	frmt = "rn";	break;
+	case 3:	frmt = "wn";	break;
 #else
-	case 2:	frmt = "wb";	break;
+	case 2:	frmt = "rb";	break;
+	case 3:	frmt = "wb";	break;
 #endif
 	}
 	if ((fp = fopen(afspec, frmt)) == NULL) {
-		fprintf(stderr, "?ASlink-Error-<cannot %s> : \"%s\"\n", wf?"create":"open", afspec);
-		lkerr++;
+		if (wf < 4) {
+			fprintf(stderr, "?ASlink-Error-<cannot %s> : \"%s\"\n", (frmt[0] == 'w')?"create":"open", afspec);
+			lkerr++;
+		} else {
+			fprintf(stderr, "?ASlink-Warning-<cannot %s> : \"%s\"\n", (frmt[0] == 'w')?"create":"open", afspec);
+		}
 	}
 	return (fp);
 }
@@ -1405,7 +1429,7 @@ char *usetxt[] = {
 	"Map format:",
 	"  -m   Map output generated as (out)file[.map]",
 	"  -w   Wide listing format for map file",
-	"  -x   Hexidecimal (default)",
+	"  -x   Hexadecimal (default)",
 	"  -d   Decimal",
 	"  -q   Octal",
 	"Output:",

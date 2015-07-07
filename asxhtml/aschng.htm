@@ -12,8 +12,34 @@
 <IMG width=576 height=5 border=0 SRC="rnbow.gif">
 
 <H4><B><PRE>
+   Asxxxx/ASlink version 5.10 is considered
+a major release version.  
+
+Version 5.10
+2014_10_31
+
+   (1)  Rewrite of listing to relocated listing translation
+        code in the assembler and the linker base code.
+        The Assemblers now create a .lst to .rst hint file
+        with the extension .hlr (when both .lst and .rel
+        files are created by the assembler).
+
+   (2)  Add as6100 assembler (Intersil IM6100 / Harris HM6100)
+
+   (3)  Add as78k0s assembler (Renesas/NEC 78K/0S) 
+
    Summary  of  changes/additions  to the ASxxxx Assemblers from
-Version 4.11 to Version 5.05.  
+Version 4.11 to Version 5.06.  
+
+Version 5.00 Update 6
+
+   This  update  for  Version  5.00  of the  ASxxxx Cross
+Assemblers rolls up updates 1, 2, 3, 4, and 5 with fixes
+for the following:
+
+   (1)  Fix asscmp assembler (pre-increment on fetch).
+
+   (2)  Fix aslink error reporting for PC relative modes.
 
 Version 5.00 Update 5
 2012_08_01
@@ -118,653 +144,6 @@ deleted:
         [asxv5pxx\asxmak\vs05\asf2mc8]
 
 
-   Merge  the  update asxv5pxx directory and subdirectories with
-the V5.00 distribution.  The following files  will  be  added  /
-overwritten:  
-
-        [asxv5pxx]
-            u01500.txt
-            u02500.txt
-            u03500.txt
-            u04500.txt
-            u05500.txt
-            _clean.bat
-            _path.bat
-            _prep.bat
-        
-        [asxv5pxx\as8048]
-            i48pst.c
-            t8048o.asm
-            t8048s.asm
-        
-        [asxv5pxx\as8051]
-            i51mch.c
-            t8051.bat
-            t8051r.asm
-            t8051rl.asm
-        
-        [asxv5pxx\ascheck\end]]
-            build.bat
-            t01.asm
-            t02.asm
-            t03.asm
-            t04.asm
-            t05.asm
-            t06.asm
-            t07.asm
-            t08.asm
-        
-        [asxv5pxx\asf2mc8]
-            f2mc8.h
-            f2mc8adr.c
-            f2mc8mch.c
-            f2mc8pst.c
-        
-        [asxv5pxx\asf8]
-            f8.h
-            f8adr.c
-            f8mch.c
-            f8pst.c
-            tf8err.asm
-            tf8err.bat
-            tf8ext.asm
-            tf8seq.asm
-            tf8seq.bat
-        
-        [asxv5pxx\aspic]
-            picmch.c
-        
-        [asxv5pxx\aspic\ptoa]
-            pictoasx.c
-            ptoa.h
-        
-        [asxv5pxx\asst6]
-            st6.h
-            st6adr.c
-            st6err.asm
-            st6err.bat
-            st6gbl.asm
-            st6mch.c
-            st6pst.c
-            tst6.asm
-            tst6.bat
-        
-        [asxv5pxx\asst7]
-            st7.h
-            st7adr.c
-            st7err.asm
-            st7err.bat
-            st7gbl.asm
-            st7mch.c
-            st7pst.c
-            tst7.asm
-            tst7.bat
-        
-        [asxv5pxx\asst8]
-            st8.h
-            st8adr.c
-            st8err.asm
-            st8err.bat
-            st8gbl.asm
-            st8mch.c
-            st8pst.c
-            tst8.asm
-            tst8.bat
-        
-        [asxv5pxx\asxhtml]
-            aschng.htm
-            ascont.htm
-            asmlnk.htm
-            asmlnk.pdf
-            asmlnk.txt
-            asf8.htm
-            asst6.htm
-            asst7.htm
-            asst8.htm
-            asxbld.htm
-            asxdoc.htm
-            asxxxx.htm
-        
-        [asxv5pxx\asxmak\cygwin\build]
-            makefile
-            _clean.bat
-            _prep.bat
-        
-        [asxv5pxx\asxmak\cygwin\build\backup]
-            makefile
-            _clean.bat
-            _prep.bat
-        
-        [asxv5pxx\asxmak\cygwin\misc]
-            tstscn.bat
-            tstwtee.bat
-        
-        [asxv5pxx\asxmak\cygwin\misc\backup]
-            tstscn.bat
-            tstwtee.bat
-        
-        [asxv5pxx\asxmak\djgpp\build]
-            build.bat
-            makefile
-            _clean.bat
-            _prep.bat
-        
-        [asxv5pxx\asxmak\djgpp\build\backup]
-            build.bat
-            makefile
-            _clean.bat
-            _prep.bat
-        
-        [asxv5pxx\asxmak\djgpp\misc]
-            tstscn.bat
-            tstwtee.bat
-        
-        [asxv5pxx\asxmak\djgpp\misc\backup]
-            tstscn.bat
-            tstwtee.bat
-        
-        [asxv5pxx\asxmak\linux\build]
-            makefile
-            _clean.bat
-            _prep.bat
-        
-        [asxv5pxx\asxmak\linux\build\backup]
-            makefile
-            _clean.bat
-            _prep.bat
-        
-        [asxv5pxx\asxmak\linux\misc]
-            tstscn.bat
-        
-        [asxv5pxx\asxmak\linux\misc\backup]
-            tstscn.bat
-        
-        [asxv5pxx\asxmak\symantec\build]
-            asf2mc8.def
-            asf2mc8.DPD
-            asf2mc8.lnk
-            asf2mc8.mak
-            asf2mc8.opn
-            asf2mc8.prj
-            asf8.DPD
-            asf8.LNK
-            asf8.MAK
-            asf8.OPN
-            asf8.prj
-            asst6.DEF
-            asst6.DPD
-            asst6.LNK
-            asst6.MAK
-            asst6.OPN
-            asst6.prj
-            asst7.DEF
-            asst7.DPD
-            asst7.LNK
-            asst7.MAK
-            asst7.OPN
-            asst7.prj
-            asst8.DEF
-            asst8.DPD
-            asst8.LNK
-            asst8.MAK
-            asst8.OPN
-            asst8.prj
-            make.bat
-            _clean.bat
-            _makeall.bat
-            _prep.bat
-            _setpath.bat
-        
-        [asxv5pxx\asxmak\symantec\build\backup]
-            make.bat
-            _clean.bat
-            _makeall.bat
-            _prep.bat
-            _setpath.bat
-        
-        [asxv5pxx\asxmak\symantec\misc]
-            tstscn.bat
-            tstwtee.bat
-        
-        [asxv5pxx\asxmak\symantec\misc\backup]
-            tstscn.bat
-            tstwtee.bat
-        
-        [asxv5pxx\asxmak\turboc30\build]
-            asf2mc8.dsk
-            asf2mc8.prj
-            ASF8.DSK
-            ASF8.PRJ
-            ASST6.DSK
-            ASST6.PRJ
-            ASST7.DSK
-            ASST7.PRJ
-            ASST8.DSK
-            ASST8.PRJ
-            makefile
-            _clean.bat
-            _makeall.bat
-        
-        [asxv5pxx\asxmak\turboc30\build\backup]
-            makefile
-            _clean.bat
-            _makeall.bat
-            _prep.bat
-            _setpath.bat
-        
-        [asxv5pxx\asxmak\turboc30\misc]
-            tstscn.bat
-            tstwtee.bat
-        
-        [asxv5pxx\asxmak\turboc30\misc\backup]
-            tstscn.bat
-            tstwtee.bat
-        
-        [asxv5pxx\asxmak\vc6\build]
-            make.bat
-            _clean.bat
-            _prep.bat
-        
-        [asxv5pxx\asxmak\vc6\build\asf2mc8]
-            asf2mc8.dsp
-            asf2mc8.dsw
-        
-        [asxv5pxx\asxmak\vc6\build\asf8]
-            asf8.dsp
-            asf8.dsw
-        
-        [asxv5pxx\asxmak\vc6\build\asst6]
-            asst6.dsp
-            asst6.dsw
-        
-        [asxv5pxx\asxmak\vc6\build\asst7]
-            asst7.dsp
-            asst7.dsw
-        
-        [asxv5pxx\asxmak\vc6\build\asst8]
-            asst8.dsp
-            asst8.dsw
-        
-        [asxv5pxx\asxmak\vc6\build\backup]
-            make.bat
-            _clean.bat
-            _prep.bat
-        
-        [asxv5pxx\asxmak\vc6\misc]
-            tstscn.bat
-            tstwtee.bat
-        
-        [asxv5pxx\asxmak\vc6\misc\backup]
-            tstscn.bat
-            tstwtee.bat
-        
-        [asxv5pxx\asxmak\vs05\build]
-            make.bat
-            _clean.bat
-            _prep.bat
-        
-        [asxv5pxx\asxmak\vs05\build\asf2mc8]
-            asf2mc8.sln
-            asf2mc8.vcproj
-        
-        [asxv5pxx\asxmak\vs05\build\asf8]
-            asf8.sln
-            asf8.vcproj
-        
-        [asxv5pxx\asxmak\vs05\build\asst6]
-            asst6.sln
-            asst6.vcproj
-        
-        [asxv5pxx\asxmak\vs05\build\asst7]
-            asst7.sln
-            asst7.vcproj
-        
-        [asxv5pxx\asxmak\vs05\build\asst8]
-            asst8.sln
-            asst8.vcproj
-        
-        [asxv5pxx\asxmak\vs05\build\backup]
-            make.bat
-            _clean.bat
-            _prep.bat
-        
-        [asxv5pxx\asxmak\vs05\misc]
-            tstscn.bat
-            tstwtee.bat
-        
-        [asxv5pxx\asxmak\vs05\misc\backup]
-            tstscn.bat
-            tstwtee.bat
-        
-        [asxv5pxx\asxmak\vs10\build]
-            make.bat
-            _clean.bat
-            _prep.bat
-        
-        [asxv5pxx\asxmak\vs10\build\as1802]
-            as1802.sln
-            as1802.suo
-            as1802.vcxproj
-            as1802.vcxproj.filters
-        
-        [asxv5pxx\asxmak\vs10\build\as2650]
-            as2650.sln
-            as2650.suo
-            as2650.vcxproj
-            as2650.vcxproj.filters
-        
-        [asxv5pxx\asxmak\vs10\build\as430]
-            as430.sln
-            as430.suo
-            as430.vcxproj
-            as430.vcxproj.filters
-        
-        [asxv5pxx\asxmak\vs10\build\as61860]
-            as61860.sln
-            as61860.suo
-            as61860.vcxproj
-            as61860.vcxproj.filters
-        
-        [asxv5pxx\asxmak\vs10\build\as6500]
-            as6500.sln
-            as6500.suo
-            as6500.vcxproj
-            as6500.vcxproj.filters
-        
-        [asxv5pxx\asxmak\vs10\build\as6800]
-            as6800.sln
-            as6800.suo
-            as6800.vcxproj
-            as6800.vcxproj.filters
-        
-        [asxv5pxx\asxmak\vs10\build\as6801]
-            as6801.sln
-            as6801.suo
-            as6801.vcxproj
-            as6801.vcxproj.filters
-        
-        [asxv5pxx\asxmak\vs10\build\as6804]
-            as6804.sln
-            as6804.suo
-            as6804.vcxproj
-            as6804.vcxproj.filters
-        
-        [asxv5pxx\asxmak\vs10\build\as6805]
-            as6805.sln
-            as6805.suo
-            as6805.vcxproj
-            as6805.vcxproj.filters
-        
-        [asxv5pxx\asxmak\vs10\build\as6808]
-            as6808.sln
-            as6808.suo
-            as6808.vcxproj
-            as6808.vcxproj.filters
-        
-        [asxv5pxx\asxmak\vs10\build\as6809]
-            as6809.sln
-            as6809.suo
-            as6809.vcxproj
-            as6809.vcxproj.filters
-        
-        [asxv5pxx\asxmak\vs10\build\as6811]
-            as6811.sln
-            as6811.suo
-            as6811.vcxproj
-            as6811.vcxproj.filters
-        
-        [asxv5pxx\asxmak\vs10\build\as6812]
-            as6812.sln
-            as6812.suo
-            as6812.vcxproj
-            as6812.vcxproj.filters
-        
-        [asxv5pxx\asxmak\vs10\build\as6816]
-            as6816.sln
-            as6816.suo
-            as6816.vcxproj
-            as6816.vcxproj.filters
-        
-        [asxv5pxx\asxmak\vs10\build\as740]
-            as740.sln
-            as740.suo
-            as740.vcxproj
-            as740.vcxproj.filters
-        
-        [asxv5pxx\asxmak\vs10\build\as8048]
-            as8048.sln
-            as8048.suo
-            as8048.vcxproj
-            as8048.vcxproj.filters
-        
-        [asxv5pxx\asxmak\vs10\build\as8051]
-            as8051.sln
-            as8051.suo
-            as8051.vcxproj
-            as8051.vcxproj.filters
-        
-        [asxv5pxx\asxmak\vs10\build\as8085]
-            as8085.sln
-            as8085.suo
-            as8085.vcxproj
-            as8085.vcxproj.filters
-        
-        [asxv5pxx\asxmak\vs10\build\as8xcxxx]
-            as8xcxxx.sln
-            as8xcxxx.suo
-            as8xcxxx.vcxproj
-            as8xcxxx.vcxproj.filters
-        
-        [asxv5pxx\asxmak\vs10\build\asavr]
-            asavr.sln
-            asavr.suo
-            asavr.vcxproj
-            asavr.vcxproj.filters
-        
-        [asxv5pxx\asxmak\vs10\build\ascheck]
-            ascheck.sln
-            ascheck.suo
-            ascheck.vcxproj
-            ascheck.vcxproj.filters
-        
-        [asxv5pxx\asxmak\vs10\build\asez80]
-            asez80.sln
-            asez80.suo
-            asez80.vcxproj
-            asez80.vcxproj.filters
-        
-        [asxv5pxx\asxmak\vs10\build\asf2mc8]
-            asf2mc8.sln
-            asf2mc8.suo
-            asf2mc8.vcxproj
-            asf2mc8.vcxproj.filters
-        
-        pasxv5pxx\asxmak\vs10\build\asf8]
-            asf8.sln
-            asf8.suo
-            asf8.vcxproj
-            asf8.vcxproj.filters
-        
-        [asxv5pxx\asxmak\vs10\build\asgb]
-            asgb.sln
-            asgb.suo
-            asgb.vcxproj
-            asgb.vcxproj.filters
-        
-        [asxv5pxx\asxmak\vs10\build\ash8]
-            ash8.sln
-            ash8.suo
-            ash8.vcxproj
-            ash8.vcxproj.filters
-        
-        [asxv5pxx\asxmak\vs10\build\aslink]
-            aslink.sln
-            aslink.suo
-            aslink.vcxproj
-            aslink.vcxproj.filters
-        
-        [asxv5pxx\asxmak\vs10\build\asm8c]
-            asm8c.sln
-            asm8c.suo
-            asm8c.vcxproj
-            asm8c.vcxproj.filters
-        
-        [asxv5pxx\asxmak\vs10\build\aspic]
-            aspic.sln
-            aspic.suo
-            aspic.vcxproj
-            aspic.vcxproj.filters
-        
-        [asxv5pxx\asxmak\vs10\build\asrab]
-            asrab.sln
-            asrab.suo
-            asrab.vcxproj
-            asrab.vcxproj.filters
-        
-        [asxv5pxx\asxmak\vs10\build\asscmp]
-            asscmp.sln
-            asscmp.suo
-            asscmp.vcxproj
-            asscmp.vcxproj.filters
-        
-        [asxv5pxx\asxmak\vs10\build\asst6]
-            asst6.sln
-            asst6.suo
-            asst6.vcxproj
-            asst6.vcxproj.filters
-        
-        [asxv5pxx\asxmak\vs10\build\asst7]
-            asst7.sln
-            asst7.suo
-            asst7.vcxproj
-            asst7.vcxproj.filters
-        
-        [asxv5pxx\asxmak\vs10\build\asst8]
-            asst8.sln
-            asst8.suo
-            asst8.vcxproj
-            asst8.vcxproj.filters
-        
-        [asxv5pxx\asxmak\vs10\build\asxcnv]
-            asxcnv.sln
-            asxcnv.suo
-            asxcnv.vcxproj
-            asxcnv.vcxproj.filters
-        
-        [asxv5pxx\asxmak\vs10\build\asxscn]
-            asxscn.sln
-            asxscn.suo
-            asxscn.vcxproj
-            asxscn.vcxproj.filters
-        
-        [asxv5pxx\asxmak\vs10\build\asz8]
-            asz8.sln
-            asz8.suo
-            asz8.vcxproj
-            asz8.vcxproj.filters
-        
-        [asxv5pxx\asxmak\vs10\build\asz80]
-            asz80.sln
-            asz80.suo
-            asz80.vcxproj
-            asz80.vcxproj.filters
-        
-        [asxv5pxx\asxmak\vs10\build\backup]
-            make.bat
-            _clean.bat
-            _prep.bat
-        
-        [asxv5pxx\asxmak\vs10\build\s19os9]
-            s19os9.sln
-            s19os9.vcxproj
-            s19os9.vcxproj.filters
-        
-        [asxv5pxx\asxmak\vs10\misc]
-            tstscn.bat
-            tstwtee.bat
-        
-        [asxv5pxx\asxmak\vs10\misc\backup]
-            tstscn.bat
-            tstwtee.bat
-        
-        [asxv5pxx\asxmak\watcom\build]
-            asf2mc8.lk1
-            asf2mc8.mk
-            asf2mc8.mk1
-            asf2mc8.tgt
-            asf2mc8.wpj
-            asf8.lk1
-            asf8.mk
-            asf8.mk1
-            asf8.tgt
-            asf8.wpj
-            asst6.lk1
-            asst6.mk
-            asst6.mk1
-            asst6.tgt
-            asst6.wpj
-            asst7.lk1
-            asst7.mk
-            asst7.mk1
-            asst7.tgt
-            asst7.wpj
-            asst8.lk1
-            asst8.mk
-            asst8.mk1
-            asst8.tgt
-            asst8.wpj
-            make.bat
-            _clean.bat
-            _makeall.bat
-            _prep.bat
-            _setpath.bat
-        
-        [asxv5pxx\asxmak\watcom\build\backup]
-            make.bat
-            _clean.bat
-            _makeall.bat
-            _prep.bat
-            _setpath.bat
-        
-        [asxv5pxx\asxmak\watcom\misc]
-            tstscn.bat
-            tstwtee.bat
-        
-        [asxv5pxx\asxmak\watcom\misc\backup]
-            tstscn.bat
-            tstwtee.bat
-        
-        [asxv5pxx\asxxmisc]
-            asxxscan.c
-        
-        [asxv5pxx\asxxsrc]
-            asdata.c
-            asexpr.c
-            aslex.c
-            aslist.c
-            asmain.c
-            asmcro.c
-            asout.c
-            assubr.c
-            asxxxx.h
-        
-        [asxv5pxx\linksrc]
-            aslink.h
-            lkbank.c
-            lkdata.c
-            lklex.c
-            lklist.c
-            lkmain.c
-            lkrloc3.c
-            lkrloc4.c
-            lksym.c
-        
-        [asxv5pxx\s19os9]
-            s19os9.c
-
-
-   You must recompile the ASxxxx Assemblers
-to incorporate the update.
 
 
 
@@ -879,62 +258,20 @@ Assemblers includes fixes for the following errors:
 
 
    Added  a general purpose macro processor to the ASxxxx assem-
-blers with the following mnemonics:  
-
-    .macro      define a general macro
-    .irp        define an indefinite repeat macro by arguments
-    .irpc       define an indefinite repeat macro by characters
-    .rept       define a repeating macro
-    .mexit      exit to end of macro
-    .endm       end of macro
-    .nchr       assign number of characters to a symbol
-    .narg       assign number of expansion arguments to a symbol
-    .ntyp       assign 0/1 if argument is absolute/relocatable
-    .nval       assign value of argument to an absolute symbol
-    .mdelete    delete a macro definition
-
-
-   The  following  additional  conditionals  provide  testing of
-string arguments most useful within macros:  
-
-    .ifb        if argument blank
-    .ifnb       if argument not blank
-
-    .ifidn      if arguments are identical
-    .ifdif      if arguments are different
-
+blers.  
 
    Added  true (t), false (f), and true or false (tf) condition-
 als to the  .if / .else / .endif  construct.   The  conditionals
 .ift,  .iff,  and .iftf allow replacement of the .else directive
 making the .if / .endif construct more readable.  
 
-    .ift        if condition is true
-    .iff        if condition is false
-    .iftf       if condition is true or false
+e.g.    .ift    if condition is true
 
 
    An  alternate  .if  construction has been added to the ASxxxx
 assemblers:  
 
-    .if    eq,...       if argument == 0
-    .if    ne,...       if argument != 0
-    .if    lt,...       if argument <  0
-    .if    ge,...       if argument >= 0
-    .if    le,...       if argument <= 0
-    .if    gt,...       if argument >  0
-
-    .if    def,...      if argument is defined
-    .if    ndef,...     if argument is not defined
-
-    .if    b,...        if argument is blank
-    .if    nb,...       if argument is not blank
-    .if    idn,...,...  if arguments are the same
-    .if    dif,...,...  if arguments are not the same
-
-    .if    t            if condition is true
-    .if    f            if condition is false
-    .if    tf           if condition is true or false
+e.g.    .if    eq,...   if argument == 0
 
 
    The  immediate  conditional statements have been added to the
@@ -943,50 +280,11 @@ ASxxxx  assemblers.   These   conditionals   can   replace   the
 
 e.g.    .iifeq  arg     label:  .word   0x1234
 
-    .iif        if argument != 0
-    .iifeq      if argument == 0
-    .iifne      if argument != 0
-    .iiflt      if argument <  0
-    .iifge      if argument >= 0
-    .iifle      if argument <= 0
-    .iifgt      if argument >  0
-
-    .iifdef     if argument is defined
-    .iifndef    if argument is not defined
-
-    .iifb       if argument is blank
-    .iifnb      if argument is not blank
-    .iifidn     if arguments are the same
-    .iifdif     if arguments are not the same
-
-    .iift       if condition is true
-    .iiff       if condition is false
-    .iiftf      if condition is true or false
-
 
    The alternate immediate conditional statements have also been
 added to the ASxxxx assemblers:  
 
 e.g.    .iif    eq,arg  label:  .word   0x1234
-
-    .iif   eq,...       if argument == 0
-    .iif   ne,...       if argument != 0
-    .iif   lt,...       if argument <  0
-    .iif   ge,...       if argument >= 0
-    .iif   le,...       if argument <= 0
-    .iif   gt,...       if argument >  0
-
-    .iif   def,...      if argument is defined
-    .iif   ndef,...     if argument is not defined
-
-    .iif   b,...        if argument is blank
-    .iif   nb,...       if argument is not blank
-    .iif   idn,...,...  if arguments are the same
-    .iif   dif,...,...  if arguments are not the same
-
-    .iif    t           if condition is true
-    .iif    f           if condition is false
-    .iif    tf          if condition is true or false
 
 
    The  listing  options  for the ASxxxx assemblers has been up-
@@ -1111,7 +409,6 @@ e.g.    .org    0
 
    In the AS6816 assembler the instruction ANDP gives
    wrong object code. Changed from 37 2A  to  37 3A.
-
 
 
 2007_04_01 (Version 4.11 Update 3)
@@ -1279,13 +576,7 @@ Version 4.00 to Version 4.10.
      5.  Added  support  for the Tandy Color Computer Disc Basic
          binary file format to ASLINK.  
 
-     6.  Updated the assembler and linker source code to support
-         16-Bit and 32-Bit compilers.  Tested with Borland Turbo
-         C++  3.0  and  Symantec 7.2 C/C++ 16-Bit compilers, and
-         with Visual C++ 6.0, Cygwin, DJGPP  V02.03,  and  Linux
-         32-Bit compilers.  
-
-     7.  Problem:  
+     6.  Problem:  
          When  an area size is equal to the 'address space size'
          the size parameter is reported as 0.  (A normal  condi-
          tion  caused  by  address rollover to 0.) Aslink inter-
@@ -1297,7 +588,7 @@ Version 4.00 to Version 4.10.
          Aslink  have  been updated to set and process this area
          flag bit.  
 
-     8.  Problem:  
+     7.  Problem:  
          The  use  of  the .end assembler directive in an Asxxxx
          assembler would cause Aslink  to  output  the  optional
          start address in all output files.  
@@ -1307,7 +598,7 @@ Version 4.00 to Version 4.10.
          only in the output file associated with  the  area/bank
          containing the .end directive.  
 
-     9.  Problem:  
+     8.  Problem:  
          Aslink  creates  output  files for banks with no output
          data.  
 
@@ -1315,20 +606,20 @@ Version 4.00 to Version 4.10.
          Aslink  now  deletes  any created output file for banks
          with no data.  
 
-    10.  Incorporated  the  patches  contained in p01400.zip for
+     9.  Incorporated  the  patches  contained in p01400.zip for
          files t1802.asm and 1802pst.c to correct for  an  error
          in  the  opcodes  generated  for  the  BM,  BL, and BNF
          mnemonics.  
 
-    11.  Incorporated  the  patches  contained in p02400.zip for
+    10.  Incorporated  the  patches  contained in p02400.zip for
          file ds8adr.c to correct for an  error  in  the  direct
          page addressing mode of AS8xCxxx.  
 
-    12.  Incorporated  the  patches  contained in p03400.zip for
+    11.  Incorporated  the  patches  contained in p03400.zip for
          file rabmch.c to correct for an error in the processing
          of the "ret cc" instruction.  
 
-    13.  Made many corrections to internal code comments.  
+    12.  Made many corrections to internal code comments.  
 
 </PRE></B></H4>
 <H5><A HREF="asxdoc.htm#TOP"> Go to the Documentation Index</A></H5>
@@ -1345,6 +636,6 @@ Version 4.00 to Version 4.10.
 <B>...  Home Page</B></P>
 </H4>
 
-<H6><P><B>Last Updated: August 2012</B></P></H6>
+<H6><P><B>Last Updated: October 2014</B></P></H6>
 </BODY> 
 </HTML>

@@ -19,6 +19,7 @@
 <H4><B><UL> 
 <LI><A HREF= #ASXSCN>  Diagnostic Listing File Scanner</A>
 <LI><A HREF= #ASXCNV>  Diagnostic Assembler File Creator</A>
+<LI><A HREF= #S19OS9>  S19OS9 Conversion Utility</A>
 <LI><A HREF= #ASCHECK>  ASxxxx Diagnostic Assembler</A>
 <BR><BR>
 <LI><A HREF="asxdoc.htm#TOP"> Go to the Documentation Index</A>
@@ -393,7 +394,7 @@ BUFFER = . - Base
 LSTMEM = . - Base
 
 
-C.2.4  Step 4:  Insert The Program Code 
+Step 4:  Insert The Program Code 
 
 
    Once  the data storage space has been allocated then the pro-
@@ -492,6 +493,51 @@ ized module is then written to the file mod.bin.
 
 </PRE></B></H4>
 <H5><A HREF= #Utilities> =&gt; Section Index</A></H5>
+<HR SIZE=3 WIDTH=100% ALIGN=Center NOSHADE>
+<H4><B><PRE>
+<A NAME = "ASCHECK"></A><FONT COLOR="#FF0000">ASxxxx Diagnostic Assembler</FONT>
+
+   The  ASxxxx assembler ASCHECK is used to test the machine in-
+dependent features of the ASxxxx assemblers.  The  source  files
+for  the ASCHECK assembler are also useful as a template for the
+development of a new ASxxxx assembler.  
+
+   The  ASCHECK  assembler has all the ASxxxx directives enabled
+for testing all features of the assemblers.  
+
+
+.opcode DIRECTIVE 
+
+Format:  
+
+        .opcode    n 
+
+The  .opcode  directive creates a single byte of code having the
+value n and having cycle counts defined in the following table: 
+
+/*--*--* 0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F */
+/*--*--* -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  - */
+/*00*/   0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,
+/*10*/  UN, 1,UN,UN,UN,UN,UN,UN,UN,UN,UN,UN,UN,UN,UN,UN,
+/*20*/  UN,UN, 2,UN,UN,UN,UN,UN,UN,UN,UN,UN,UN,UN,UN,UN,
+/*30*/  UN,UN,UN, 3,UN,UN,UN,UN,UN,UN,UN,UN,UN,UN,UN,UN,
+/*40*/  UN,UN,UN,UN, 4,UN,UN,UN,UN,UN,UN,UN,UN,UN,UN,UN,
+/*50*/  UN,UN,UN,UN,UN, 5,UN,UN,UN,UN,UN,UN,UN,UN,UN,UN,
+/*60*/  UN,UN,UN,UN,UN,UN, 6,UN,UN,UN,UN,UN,UN,UN,UN,UN,
+/*70*/  UN,UN,UN,UN,UN,UN,UN, 7,UN,UN,UN,UN,UN,UN,UN,UN,
+/*80*/  UN,UN,UN,UN,UN,UN,UN,UN, 8,UN,UN,UN,UN,UN,UN,UN,
+/*90*/  UN,UN,UN,UN,UN,UN,UN,UN,UN, 9,UN,UN,UN,UN,UN,UN,
+/*A0*/  UN,UN,UN,UN,UN,UN,UN,UN,UN,UN,10,UN,UN,UN,UN,UN,
+/*B0*/  UN,UN,UN,UN,UN,UN,UN,UN,UN,UN,UN,11,UN,UN,UN,UN,
+/*C0*/  UN,UN,UN,UN,UN,UN,UN,UN,UN,UN,UN,UN,12,UN,UN,UN,
+/*D0*/  UN,UN,UN,UN,UN,UN,UN,UN,UN,UN,UN,UN,UN,13,UN,UN,
+/*E0*/  UN,UN,UN,UN,UN,UN,UN,UN,UN,UN,UN,UN,UN,UN,14,UN,
+/*F0*/  UN,UN,UN,UN,UN,UN,UN,UN,UN,UN,UN,UN,UN,UN,UN,15
+
+The  UN symbols indicate 'undefined cycles' where no cycle count
+will be output.  
+</PRE></B></H4>
+<H5><A HREF= #Utilities> =&gt; Section Index</A></H5>
 
 <IMG width=576 height=5 border=0 SRC="rnbow.gif">
 
@@ -505,6 +551,6 @@ ized module is then written to the file mod.bin.
 <B>...  Home Page</B></P>
 </H4>
 
-<H6><P><B>Last Updated: April 2009</B></P></H6>
+<H6><P><B>Last Updated: October 2014</B></P></H6>
 </BODY> 
 </HTML>

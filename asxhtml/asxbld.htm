@@ -24,6 +24,7 @@
     <IMG SRC = "yellow.gif" ALT = "-">... <A HREF = "#VC6">Building ASxxxx and ASlink with VC6</A>
     <IMG SRC = "yellow.gif" ALT = "-">... <A HREF = "#VS05">Building ASxxxx and ASlink with VS2005</A>
     <IMG SRC = "yellow.gif" ALT = "-">... <A HREF = "#VS10">Building ASxxxx and ASlink with VS2010</A>
+    <IMG SRC = "yellow.gif" ALT = "-">... <A HREF = "#VS13">Building ASxxxx and ASlink with VS2013</A>
     <IMG SRC = "yellow.gif" ALT = "-">... <A HREF = "#WATCOM">Building ASxxxx and ASlink with Open Watcom</A>
     <IMG SRC = "yellow.gif" ALT = "-">... <A HREF = "#BUILD">Maintenance Files _prep.bat and _clean.bat</A>
     <IMG SRC = "yellow.gif" ALT = "-">... <A HREF = "asxdoc.htm#TOP">Go to Documentation Index</A>
@@ -35,13 +36,14 @@
 Linux, DOS, and various flavors of Windows using the Linux  GCC,
 the Cygwin environment, the DJGPP environment, and the graphical
 user   interfaces   and    command    line    environments    of
-MS Visual C++ V6.0,   MS Visual Studio 2005,   Open Watcom V1.7,
+MS Visual C++ V6.0,                       MS Visual Studio 2005,
+MS Visual Studio 2010, MS Visual Studio 2013,  Open Watcom V1.7,
 Symantec C/C++ V7.2, and Turbo C 3.0.  
 
    Makefiles  for  Linux,  Cygwin,  DJGPP,  project  files and a
 makefile for Turbo C and psuedo makefiles and project files  for
-VC6, VS2005, Open Watcom and Symantec are available to build all
-the assemblers and the linker.  
+VC6, VS2005, VS2010, VS2013, Open Watcom and Symantec are avail-
+able to build all the assemblers and the linker.  
 
    Unpack  the  asxv5pxx.zip  file into an appropriate directory
 using the utility appropriate to your environment.  For  DOS  or
@@ -73,7 +75,7 @@ cumentation  (asxhtml),  NoICE  support  files  (noice), various
 debug monitors that can be assembled with the ASxxxx  assemblers
 (asmasm),  project files for an application that uses the AS6809
 assembler and ASlink linker (project), and the packaging  direc-
-tory (zipper).  
+tory (zipper).
 
 </PRE></B></H4>
 <IMG width=576 height=5 border=0 SRC="rnbow.gif">
@@ -163,87 +165,6 @@ sembler, linker, or utility you wish to build:
         make aslink
 
 </PRE></B></H4>
-<H5><A HREF= #Index> =&gt; Section Index</A></H5>
-
-<IMG width=576 height=5 border=0 SRC="rnbow.gif">
-<A NAME = "SYMANTEC"> </A>
-<H3><B>
-<IMG SRC = "green.gif" ALT = "-">... Building ASxxxx and ASlink with Symantec C/C++ V7.2</A>
-</B></H3>
-
-<H4><B><PRE>
-
-   The  Symantec  product is no longer available but is included
-for historical reasons (the final version, 7.5,  was  introduced
-in  1996).   The  product had an excellent graphical user inter-
-face, built in editor, project manager, and supported  DOS,  Ex-
-tended  DOS  (the  executable  contained a built in DOS extender
-which was rendered unusable in Windows 2000, after service  pack
-2, or in Windows XP), Win95, and Windows NT.  
-
-
-Graphical User Interface 
-
-
-   Each  ASxxxx Assembler has a series of project specific files
-(*.bro, *.def, *.dpd, *.lnk, *.mak, *.opn, and *.prj) located in
-in  the  subdirectory \asxv5pxx\asxmak\symantec\build.  You must
-enter the .prj filename into the Symantec IDE  and  then  select
-Project->Settings->Directories  and  change the include, target,
-and compiler output directories  to  match  your  configuration.
-After  these  changes have been made you will be able to compile
-the selected project.  These changes must  be  manually  entered
-for each project.  
-
-
-Command Line Interface 
-
-
-   Before  the  command line interface can be used you must per-
-form the steps outlined in the 'Graphical  User  Interface'  in-
-structions above for each project you wish to build.  
-
-   Open      a      command     prompt     window     in     the
-\asxv5pxx\asxmak\symantec\build directory.   The  file  make.bat
-found  in  the directory can be used to invoke the Symantec com-
-mand line compiler.  The make.bat file assumes that the path  to
-the  compiler  directories has been set in the environment vari-
-able PATH.  Assuming the Symantec compiler has been installed in
-the  default location (C:\SC) the file _setpath.bat will set the
-PATH variable.  If this is not the case then the line 
-
-PATH=C:\SC;C:\SC\BIN;C:\SC\INCLUDE;C:\SC\LIB
-
-must  be changed to match your environment.  The compiled object
-code      modules      will      be      placed      in      the
-\asxv5pxx\asxmak\symantec\build  directory  and  the  executable
-files will be placed in the \asxv5pxx\asxmak\symantec\exe direc-
-tory.  
-
-
-   The command 
-
-        make all
-
-will compile and link all the ASxxxx assemblers, the ASlink pro-
-gram, and the utility programs asxscn and asxcnv.  The make file
-can make a single program by invoking make with the specific as-
-sembler, linker, or utility you wish to build:  
-
-        make aslink
-
-
-The  Symantec  make utility , smake.exe, uses the information in
-the corresponding .mak files to compile and link the programs.  
-
-   The file _makeall.bat found in the directory can also be used
-to invoke the Symantec command line compiler.  The  _makeall.bat
-file calls the _setpath.bat file to set the path to the compiler
-directories in the environment variable PATH  and  then  invokes
-'make all'.  
-  
-</PRE></B></H4>
-
 <H5><A HREF= #Index> =&gt; Section Index</A></H5>
 
 <IMG width=576 height=5 border=0 SRC="rnbow.gif">
@@ -491,6 +412,65 @@ of anything does a complete rebuild of the program.
 <H5><A HREF= #Index> =&gt; Section Index</A></H5>
 
 <IMG width=576 height=5 border=0 SRC="rnbow.gif">
+<A NAME = "VS13"> </A>
+<H3><B>
+<IMG SRC = "green.gif" ALT = "-">... Building ASxxxx and ASlink with VS2013</A>
+</B></H3>
+
+<H4><B><PRE>
+
+Graphical User Interface 
+
+
+   Each  ASxxxx  Assembler has a VS2013 project file (*.vcxproj)
+located in a subdirectory of \asxv5pxx\asxmak\vs13\build.   Sim-
+ply  enter  this  project  filename  into  the  VS2013  IDE  and
+build/rebuild the assembler.  
+
+
+Command Line Interface 
+
+
+   Open      a      command     prompt     window     in     the
+\asxv5pxx\asxmak\vs13\build directory.  The file make.bat  found
+in  the  directory can be used to invoke the VS2013 command line
+compiler.  The make.bat file assumes that the  Visual  C++  com-
+piler  has  been  installed in the default location.  If this is
+not the case then the line 
+
+call "c:\Program Files (x86)\Microsoft Visual Studio 12.0\
+                 VC\bin\vcvars32.bat"
+
+must  be changed to match your environment.  The compiled object
+code      modules      will      be      placed      in      the
+\asxv5pxx\asxmak\vs13\build\as----\release directory and the ex-
+ecutable files will be placed in  the  \asxv5pxx\asxmak\vs13\exe
+directory.  
+
+
+
+   The command 
+
+        make all
+
+will compile and link all the ASxxxx assemblers, the ASlink pro-
+gram, and the utility programs asxscn and asxcnv.  The make file
+can make a single program by invoking make with the specific as-
+sembler, linker, or utility you wish to build:  
+
+        make aslink
+
+
+The  VS2013  command  line  compiler uses the information in the
+corresponding .vcxproj file to compile and link the programs.  
+
+   The  command  'make clean' is not required or valid as a make
+of anything does a complete rebuild of the program.  
+
+</PRE></B></H4>
+<H5><A HREF= #Index> =&gt; Section Index</A></H5>
+
+<IMG width=576 height=5 border=0 SRC="rnbow.gif">
 <A NAME = "WATCOM"> </A>
 <H3><B>
 <IMG SRC = "green.gif" ALT = "-">... Building ASxxxx and ASlink with Open Watcom</A>
@@ -554,6 +534,87 @@ of anything does a complete rebuild of the program.
 <H5><A HREF= #Index> =&gt; Section Index</A></H5>
 
 <IMG width=576 height=5 border=0 SRC="rnbow.gif">
+<A NAME = "SYMANTEC"> </A>
+<H3><B>
+<IMG SRC = "green.gif" ALT = "-">... Building ASxxxx and ASlink with Symantec C/C++ V7.2</A>
+</B></H3>
+
+<H4><B><PRE>
+
+   The  Symantec  product is no longer available but is included
+for historical reasons (the final version, 7.5,  was  introduced
+in  1996).   The  product had an excellent graphical user inter-
+face, built in editor, project manager, and supported  DOS,  Ex-
+tended  DOS  (the  executable  contained a built in DOS extender
+which was rendered unusable in Windows 2000, after service  pack
+2, or in Windows XP), Win95, and Windows NT.  
+
+
+Graphical User Interface 
+
+
+   Each  ASxxxx Assembler has a series of project specific files
+(*.bro, *.def, *.dpd, *.lnk, *.mak, *.opn, and *.prj) located in
+in  the  subdirectory \asxv5pxx\asxmak\symantec\build.  You must
+enter the .prj filename into the Symantec IDE  and  then  select
+Project->Settings->Directories  and  change the include, target,
+and compiler output directories  to  match  your  configuration.
+After  these  changes have been made you will be able to compile
+the selected project.  These changes must  be  manually  entered
+for each project.  
+
+
+Command Line Interface 
+
+
+   Before  the  command line interface can be used you must per-
+form the steps outlined in the 'Graphical  User  Interface'  in-
+structions above for each project you wish to build.  
+
+   Open      a      command     prompt     window     in     the
+\asxv5pxx\asxmak\symantec\build directory.   The  file  make.bat
+found  in  the directory can be used to invoke the Symantec com-
+mand line compiler.  The make.bat file assumes that the path  to
+the  compiler  directories has been set in the environment vari-
+able PATH.  Assuming the Symantec compiler has been installed in
+the  default location (C:\SC) the file _setpath.bat will set the
+PATH variable.  If this is not the case then the line 
+
+PATH=C:\SC;C:\SC\BIN;C:\SC\INCLUDE;C:\SC\LIB
+
+must  be changed to match your environment.  The compiled object
+code      modules      will      be      placed      in      the
+\asxv5pxx\asxmak\symantec\build  directory  and  the  executable
+files will be placed in the \asxv5pxx\asxmak\symantec\exe direc-
+tory.  
+
+
+   The command 
+
+        make all
+
+will compile and link all the ASxxxx assemblers, the ASlink pro-
+gram, and the utility programs asxscn and asxcnv.  The make file
+can make a single program by invoking make with the specific as-
+sembler, linker, or utility you wish to build:  
+
+        make aslink
+
+
+The  Symantec  make utility , smake.exe, uses the information in
+the corresponding .mak files to compile and link the programs.  
+
+   The file _makeall.bat found in the directory can also be used
+to invoke the Symantec command line compiler.  The  _makeall.bat
+file calls the _setpath.bat file to set the path to the compiler
+directories in the environment variable PATH  and  then  invokes
+'make all'.  
+  
+</PRE></B></H4>
+
+<H5><A HREF= #Index> =&gt; Section Index</A></H5>
+
+<IMG width=576 height=5 border=0 SRC="rnbow.gif">
 <A NAME = "BUILD"> </A>
 <H3><B>
 <IMG SRC = "green.gif" ALT = "-">... Maintenace Files _prep.bat and _clean.bat</A>
@@ -583,6 +644,6 @@ as _prep.bat and removes the compiled executables.
 <B>...  Home Page</B></P>
 </H4>
 
-<H6><P><B>Last Updated: August 2012</B></P></H6>
+<H6><P><B>Last Updated: October 2014</B></P></H6>
 </BODY> 
 </HTML>
