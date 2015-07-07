@@ -4,7 +4,7 @@ aslink.OPN
 novcs
 aslink.DEF
 6
-1150355460
+1150359060
 0 0 0 0 0 "..\..\..\LINKSRC\lkarea.c"
 0 0 0 0 0 "..\..\..\LINKSRC\lkbank.c"
 0 0 0 0 0 "..\..\..\LINKSRC\lkdata.c"
@@ -28,3 +28,4 @@ aslink.DEF
 0 -1 0 0 0 "C:\SC\INCLUDE\stdlib.h"
 0 -1 0 0 0 "..\..\..\LINKSRC\aslink.h"
 0 -1 0 0 0 "C:\SC\INCLUDE\setjmp.h"
+0 -1 0 0 0 "C:\SC\INCLUDE\time.h"

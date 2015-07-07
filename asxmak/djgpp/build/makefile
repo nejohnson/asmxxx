@@ -3,13 +3,14 @@
 #		DJGPP V02.03  'GNU make' Version
 #		================================
 #
-#   25  October  2010		GCC 4.0.1 / make 3.79.1
+#   8  October  2014		GCC 4.0.1 / make 3.79.1
 #
 ####################################################################
 
 ASXXXX =	as1802		\
 		as2650		\
 		as430		\
+		as6100		\
 		as61860		\
 		as6500		\
 		as6800		\
@@ -22,6 +23,7 @@ ASXXXX =	as1802		\
 		as6812		\
 		as6816		\
 		as740		\
+		as78k0s		\
 		as8048		\
 		as8051		\
 		as8085		\
@@ -76,6 +78,7 @@ DSTEXE=		../exe/
 SRC1802=	$(ASXBAS)as1802/
 SRC2650=	$(ASXBAS)as2650/
 SRC430=		$(ASXBAS)as430/
+SRC6100=	$(ASXBAS)as6100/
 SRC61860=	$(ASXBAS)as61860/
 SRC6500=	$(ASXBAS)as6500/
 SRC6800=	$(ASXBAS)as6800/
@@ -88,6 +91,7 @@ SRC6811=	$(ASXBAS)as6811/
 SRC6812=	$(ASXBAS)as6812/
 SRC6816=	$(ASXBAS)as6816/
 SRC740=		$(ASXBAS)as740/
+SRC78K0S=	$(ASXBAS)as78k0s/
 SRC8048=	$(ASXBAS)as8048/
 SRC8051=	$(ASXBAS)as8051/
 SRC8085=	$(ASXBAS)as8085/
@@ -210,6 +214,25 @@ as430 :		$(ASXX) $(AS430)
 		$(LD) $(LDFLAGS) -o as430 $(ASXX) $(AS430)
 		mv as430.exe $(DSTEXE)as430.exe
 		strip $(DSTEXE)as430.exe
+
+
+####################################################################
+# AS6100
+####################################################################
+
+AS6100 =	i61adr.o i61pst.o i61mch.o
+
+i61adr.o :	$(SRC6100)i61adr.c $(SRC6100)i6100.h $(SRCASX)asxxxx.h
+		$(CC) $(CCFLAGS) -I$(SRCASX) -I$(SRCMISC) -c $< -o $(@F)
+i61pst.o :	$(SRC6100)i61pst.c $(SRC6100)i6100.h $(SRCASX)asxxxx.h
+		$(CC) $(CCFLAGS) -I$(SRCASX) -I$(SRCMISC) -c $< -o $(@F)
+i61mch.o :	$(SRC6100)i61mch.c $(SRC6100)i6100.h $(SRCASX)asxxxx.h
+		$(CC) $(CCFLAGS) -I$(SRCASX) -I$(SRCMISC) -c $< -o $(@F)
+
+as6100 :	$(ASXX) $(AS6100)
+		$(LD) $(LDFLAGS) -o as6100 $(ASXX) $(AS6100)
+		mv as6100.exe $(DSTEXE)as6100.exe
+		strip $(DSTEXE)as6100.exe
 
 
 ####################################################################
@@ -438,6 +461,25 @@ as740 :		$(ASXX) $(AS740)
 		$(LD) $(LDFLAGS) -o as740 $(ASXX) $(AS740)
 		mv as740.exe $(DSTEXE)as740.exe
 		strip $(DSTEXE)as740.exe
+
+
+####################################################################
+# AS78K0S
+####################################################################
+
+AS78K0S =	r78kadr.o r78kpst.o r78kmch.o
+
+r78kadr.o :	$(SRC78K0S)r78kadr.c $(SRC78K0S)r78k0s.h $(SRCASX)asxxxx.h
+		$(CC) $(CCFLAGS) -I$(SRCASX) -I$(SRCMISC) -c $< -o $(@F)
+r78kpst.o :	$(SRC78K0S)r78kpst.c $(SRC78K0S)r78k0s.h $(SRCASX)asxxxx.h
+		$(CC) $(CCFLAGS) -I$(SRCASX) -I$(SRCMISC) -c $< -o $(@F)
+r78kmch.o :	$(SRC78K0S)r78kmch.c $(SRC78K0S)r78k0s.h $(SRCASX)asxxxx.h
+		$(CC) $(CCFLAGS) -I$(SRCASX) -I$(SRCMISC) -c $< -o $(@F)
+
+as78k0s :	$(ASXX) $(AS78K0S)
+		$(LD) $(LDFLAGS) -o as78k0s $(ASXX) $(AS78K0S)
+		mv as78k0s.exe $(DSTEXE)as78k0s.exe
+		strip $(DSTEXE)as78k0s.exe
 
 
 ####################################################################

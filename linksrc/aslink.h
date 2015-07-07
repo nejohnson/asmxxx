@@ -1,7 +1,7 @@
 /* aslink.h */
 
 /*
- *  Copyright (C) 1989-2012  Alan R. Baldwin
+ *  Copyright (C) 1989-2014  Alan R. Baldwin
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -33,13 +33,14 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 
 /*
  * Local Definitions
  */
 
-#define	VERSION "V05.05"
-#define	COPYRIGHT "2012"
+#define	VERSION "V05.10"
+#define	COPYRIGHT "2014"
 
 /*
  * To include NoICE Debugging set non-zero
@@ -147,6 +148,28 @@
  */
 
 /*
+ *	.HLR Definitions from the Assemblers
+ */
+#define NLIST	0		/* No listing */
+#define SLIST	1		/* Source only */
+#define ALIST	2		/* Address only */
+#define	BLIST	3		/* Address only with allocation */
+#define CLIST	4		/* Code */
+#define	ELIST	5		/* Equate only */
+
+#define	LIST_ERR	0x0001	/* Error Code(s) */
+#define	LIST_LOC	0x0002	/* Location */
+#define	LIST_BIN	0x0004	/* Generated Binary Value(s)*/
+#define	LIST_EQT	0x0008	/* Assembler Equate Value */
+#define	LIST_CYC	0x0010	/* Opcode Cycles */
+#define	LIST_LIN	0x0020	/* Line Numbers */
+#define	LIST_SRC	0x0040	/* Assembler Source Code */
+
+#define	LIST_NLST	0x0080	/* For HLR file only */
+
+#define	LIST_NONE	0x0000	/* NLIST Flags Mask */
+
+/*
  * Global symbol types.
  */
 #define	S_REF	1		/* referenced */
@@ -201,10 +224,14 @@
 #define	CYCNT_END	']'	/* Cycle count end   delimiter */
 
 /*
+ * Default Page Length Mask
+ */
+#define	DEFAULT_PMASK	0xFF	/* 256 Element Boundary / Length */ 
+
+/*
  * Internal ASxxxx Version Variable
  */
 extern	int	ASxxxx_VERSION;
-
 
 /*
  *	ASLINK - Version 3 Definitions
@@ -924,6 +951,9 @@ extern	FILE	*sfp;		/*	The file handle sfp points to the
 extern	FILE	*tfp;		/*	File handle for input
 				 *	ASxxxx listing file
 				 */
+extern	FILE	*hfp;		/*	File handle for input ASxxxx
+				 *	.lst to .rst hint file
+				 */
 
 #if SDCDB
 extern	FILE	*yfp;		/*	SDCDB output file handle
@@ -968,6 +998,8 @@ extern	int	page;		/*	current page number
 				 */
 extern	int	lop;		/*	current line number on page
 				 */
+extern	time_t	curtim;		/*	pointer to the current time string
+				 */
 extern	int	pass;		/*	linker pass number
 				 */
 extern	a_uint	pc;		/*	current relocation address
@@ -1009,11 +1041,21 @@ extern	a_uint	s_mask;		/*	Sign Mask
 				 */
 extern	a_uint	v_mask;		/*	Value Mask
 				 */
-extern	int	gline;		/*	LST file relocation active
-				 *	for current line
+extern	a_uint	p_mask;		/*	Page Mask
 				 */
-extern	int	gcntr;		/*	LST file relocation active
-				 *	counter
+extern	int	gline;		/*	Read a LST line flag
+				 */
+extern	int	gcntr;		/*	Bytes processed in LST line
+				 */
+extern	int	hline;		/*	Read a HLR line flag
+				 */
+extern	int	listing;	/*	Assembled line listing bits
+				 */
+extern	int	lmode;		/*	Assembled line listing mode
+				 */
+extern	int	bytcnt;		/*	Assenbled bytes for this line
+				 */
+extern	char	eqt_id[128];	/*	Area name for this ELIST line
 				 */
 extern	struct lbpath *lbphead;	/*	pointer to the first
 				 *	library path structure
@@ -1121,12 +1163,17 @@ extern	a_uint		term(void);
 
 /* lklist.c */
 extern	int		dgt(int rdx, char *str, int n);
+extern	int		gethlr(int nhline);
+extern	int		getlst(int ngline);
 extern	VOID		newpag(FILE *fp);
 extern	VOID		slew(struct area *xp, struct bank *yp);
 extern	VOID		lstarea(struct area *xp, struct bank *yp);
 extern	VOID		lkulist(int i);
 extern	VOID		lkalist(a_uint cpc);
+extern	VOID		hlralist(a_uint cpc);
 extern	VOID		lkglist(a_uint cpc, int v, int err);
+extern	VOID		hlrglist(a_uint cpc, int v, int err);
+extern	int		hlrelist(void);
 
 /* lknoice.c */
 extern	VOID		NoICEfopen(void);
@@ -1141,7 +1188,7 @@ extern	VOID		DefineEndFunction(a_uint value, struct bank *yp);
 extern	VOID		DefineLine(char *lineString, a_uint value, struct bank *yp);
 extern	VOID		PagedAddress(a_uint value, struct bank *yp);
 
-/* lkcdb.c */
+/* lksccdb.c */
 extern	VOID		SDCDBfopen(void);
 extern	VOID		SDCDBcopy(char * str);
 extern	VOID		DefineSDCDB(char *name, a_uint value);
@@ -1295,12 +1342,15 @@ extern	a_uint		term();
 
 /* lklist.c */
 extern	int		dgt();
+extern	VOID		gethlr();
+extern	VOID		getlst();
 extern	VOID		newpag();
 extern	VOID		slew();
 extern	VOID		lstarea();
 extern	VOID		lkulist();
 extern	VOID		lkalist();
 extern	VOID		lkglist();
+extern	int		hlrelist();
 
 /* lknoice.c */
 extern	VOID		NoICEfopen();

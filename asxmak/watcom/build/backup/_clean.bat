@@ -4,5 +4,5 @@ del *.obj
 del *.map
 del *.sym
 del ..\misc\*.lst
-del /q ..\exe\*.*
+del /q ..\exe\*.exe
 

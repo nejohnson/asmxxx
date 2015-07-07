@@ -1018,6 +1018,91 @@ area to locate the offending code.
 
 </PRE></B></H4>
 <H5><A HREF="aslink.htm#Index">  Return to the Linker Index</A></H5>
+<IMG width=576 height=5 border=0 SRC="rnbow.gif">
+<A NAME = "Hint"></A>
+<H3><B>
+<IMG SRC = "green.gif" ALT = "-">... Hint File Format For Relocated Listings</A>
+</B></H3>
+
+<H4><B><PRE>
+   The  hint file is an ascii file containing information needed
+by the linker to convert the listing file into a relocated list-
+ing  file.   Each  line  in the .hlr file coresponds to a single
+line in the listing file.  The text line usually contains 3 or 4
+parameters  in  the radix selected for the assembler as shown in
+the following table:  
+
+Line Position:  123456789012
+                ------------
+Octal:           111 222 333
+Decimal:         111 222 333
+Hex:             11 22 33
+
+Parameter 1 specifies the parameters listed in the line.
+A bit is set for each listing option enabled during the
+assembly of the line.
+
+        BIT 0   - LIST_ERR      Error Code(s)
+        BIT 1   - LIST_LOC      Location
+        BIT 2   - LIST_BIN      Generated Binary Value(s)
+        BIT 3   - LIST_EQT      Assembler Equate Value
+        BIT 4   - LIST_CYC      Opcode Cycles
+        BIT 5   - LIST_LIN      Line Numbers
+        BIT 6   - LIST_SRC      Assembler Source Code
+        BIT 7   - HLR_NLST      Listing Inhibited
+
+Parameter 2 is the internal assembler listing mode
+value specified for this line during the assembly process:
+
+        0 - NLIST       No listing
+        1 - SLIST       Source only
+        2 - ALIST       Address only
+        3 - BLIST       Address only with allocation
+        4 - CLIST       Code
+        5 - ELIST       Equate only
+        6 - ILIST       IF conditional evaluation
+
+Parameter 3 is the number of output bytes listed
+for this line.
+
+   The  4th  parameter  is only output if an equate references a
+value in a different area.  The area name is output in the  fol-
+lowing format following the 3 parameters described above:  
+
+Line Position:  123456789012
+                ------------
+Area Name:       equatearea
+
+
+   When the line number is present it is prepended to the 3 or 4
+parameters described  above.   The  line  number  is  always  in
+decimal in the following format:  
+
+Line Position:  1234567
+                -------
+Decimal:          LLLLL
+
+   Thus the four formats (for each radix) that may be present in
+a .hlr file are:  
+
+Line Position:  123456789012345678901234567890
+                ------------------------------
+                 11 22 33
+                 11 22 33 equatearea
+                  LLLLL 11 22 33
+                  LLLLL 11 22 33 equatearea
+
+   The  linker understands these formats without any user inter-
+action.  
+
+   If  a  hint  file  does not exist then the linker attempts to
+convert the list file to a relocated list file using some  basic
+assumptions  about the parameters listed in each line.  The con-
+version without a hint file  requires  at  least  these  listing
+parameters:   LOC,  BIN,  MEB, and ME.  The 'equate' values will
+not be updated.  
+</PRE></B></H4>
+<H5><A HREF="aslink.htm#Index">  Return to the Linker Index</A></H5>
 
 <IMG width=576 height=5 border=0 SRC="rnbow.gif">
 <A NAME = "IntelIHX"></A>

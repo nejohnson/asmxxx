@@ -1,7 +1,7 @@
 /* asexpr.c */
 
 /*
- *  Copyright (C) 1989-2010  Alan R. Baldwin
+ *  Copyright (C) 1989-2014  Alan R. Baldwin
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -769,7 +769,7 @@ a_uint n;
 			err('v');
 		}
 	}
-	return(n & s_mask) ? n | ~v_mask : n & v_mask;
+	return((n & s_mask) ? (n | ~v_mask) : (n & v_mask));
 }
 
 /*)Function	VOID	exprmasks(esp)

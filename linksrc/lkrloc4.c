@@ -1,7 +1,7 @@
 /* lkrloc4.c */
 
 /*
- *  Copyright (C) 2003-2010  Alan R. Baldwin
+ *  Copyright (C) 2003-2014  Alan R. Baldwin
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -908,7 +908,10 @@ relp4()
 	sdp.s_areax = a[aindex];
 	sdp.s_area = sdp.s_areax->a_bap;
 	sdp.s_addr = adb_xb(0,a_bytes*2);
-	if (sdp.s_area->a_addr & 0xFF || sdp.s_addr & 0xFF)
+	if (rtcnt > a_bytes*3) {
+		p_mask = adb_xb(0,a_bytes*3);
+	}
+	if (sdp.s_area->a_addr & p_mask || sdp.s_addr & p_mask)
 		relerp4("Page Definition Boundary Error");
 }
 

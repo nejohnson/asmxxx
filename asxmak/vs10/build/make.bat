@@ -38,6 +38,11 @@ cd as430
 %VC$BUILD% /p:Configuration=Release as430.vcxproj 
 @echo off
 cd ..
+cd as6100
+@echo on
+%VC$BUILD% /p:Configuration=Release as6100.vcxproj 
+@echo off
+cd ..
 cd as61860
 @echo on
 %VC$BUILD% /p:Configuration=Release as61860.vcxproj 
@@ -96,6 +101,11 @@ cd ..
 cd as740
 @echo on
 %VC$BUILD% /p:Configuration=Release as740.vcxproj 
+@echo off
+cd ..
+cd as78k0s
+@echo on
+%VC$BUILD% /p:Configuration=Release as78k0s.vcxproj 
 @echo off
 cd ..
 cd as8048
@@ -237,13 +247,13 @@ echo Valid arguments are:
 echo --------  --------  --------  --------  --------  --------
 echo all       ==        'blank'
 echo --------  --------  --------  --------  --------  --------
-echo as1802    as2650    as430     as740     as61860
-echo as6500    as6800    as6801    as6804    as6805
-echo as6808    as6809    as6811    as6812    as6816
-echo as8048    as8051    as8085    as8xcxxx  asz8
-echo asz80     asez80    asgb      asrab     ash8
-echo asf2mc8   asf8      asm8c     aspic     asavr
-echo ascheck   asscmp    asst6     asst7     asst8
+echo as1802    as2650    as430     as6100    as61860   as6500
+echo as6800    as6801    as6804    as6805    as6808    as6809
+echo as6811    as6812    as6816    as740     as78k0s   as8048
+echo as8051    as8085    as8xcxxx  asavr     ascheck   asez80
+echo asf2mc8   asf8      asgb      ash8      asm8c     aspic
+echo asrab     asscmp    asst6     asst7     asst8     asz8
+echo asz80     
 echo --------  --------  --------  --------  --------  --------
 echo aslink    asxcnv    asxscn    s19os9
 echo --------  --------  --------  --------  --------  --------

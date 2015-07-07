@@ -1,7 +1,7 @@
 /* m16pst.c */
 
 /*
- *  Copyright (C) 1991-2009  Alan R. Baldwin
+ *  Copyright (C) 1991-2014  Alan R. Baldwin
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by

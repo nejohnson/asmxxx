@@ -145,16 +145,30 @@ The ASxxxx options in some more detail:
                 rsRS    signed,
                 pqPQ    program counter relative.
 
-   The file name for the .lst, .rel, and .sym files is the first
-file name specified in the command line.  All output  files  are
-ascii  text  files which may be edited, copied, etc.  The output
-files are the concatenation of all the input files, if files are
-to  be  assembled  independently  invoke  the assembler for each
+   The file name for the .lst, .rel, .hlr, and .sym files is the
+first file name specified in the command line.  All output files
+are ascii text files which may be edited, copied, etc.  The out-
+put files are the concatenation of all the input files, if files
+are  to be assembled independently invoke the assembler for each
 file.  
 
    The  .rel  file contains a radix directive so that the linker
 will use the proper conversion for this file.  Linked files  may
 have different radices.  
+
+   The  ASxxxx  assemblers  also  have  several 'hidden' options
+which are not shown in the usage message.  These are:  
+
+        -h      Print the usage message and exit
+
+        -r      Include assembler line numbers
+                in the .hlr hint file
+        -rr     Also include non listed line
+                numbers in the .hlr hint file
+
+        -t      Show Include File and Macro Expansion
+                levels and memory allocations for
+                the assembler and macro processor
 
 </PRE></B></H4>
 <H5><A HREF="asmblr.htm#Index">  Return to the Assembler Index</A></H5>
@@ -429,6 +443,86 @@ following designators:
    Refer to the linker for a detailed description of each of the
 designators and the format of the information contained  in  the
 object file.  
+
+<H5><A HREF="asmblr.htm#Index">  Return to the Assembler Index</A></H5>
+</PRE></B></H4>
+
+<IMG width=576 height=5 border=0 SRC="rnbow.gif">
+<A NAME = "Hint"></A>
+<H3><B>
+<IMG SRC = "green.gif" ALT = "-">... Hint File</A>
+</B></H3>
+
+<H4><B><PRE>
+   The  hint file is an ascii file containing information needed
+by the linker to convert the listing file into a relocated list-
+ing  file.   Each  line  in the .hlr file coresponds to a single
+line in the listing file.  The text line usually contains 3 or 4
+parameters  in  the radix selected for the assembler as shown in
+the following table:  
+
+Line Position:  123456789012
+                ------------
+Octal:           111 222 333
+Decimal:         111 222 333
+Hex:             11 22 33
+
+Parameter 1 specifies the parameters listed in the line.
+A bit is set for each listing option enabled during the
+assembly of the line.
+
+        BIT 0   - LIST_ERR      Error Code(s)
+        BIT 1   - LIST_LOC      Location
+        BIT 2   - LIST_BIN      Generated Binary Value(s)
+        BIT 3   - LIST_EQT      Assembler Equate Value
+        BIT 4   - LIST_CYC      Opcode Cycles
+        BIT 5   - LIST_LIN      Line Numbers
+        BIT 6   - LIST_SRC      Assembler Source Code
+        BIT 7   - HLR_NLST      Listing Inhibited
+
+Parameter 2 is the internal assembler listing mode
+value specified for this line during the assembly process:
+
+        0 - NLIST       No listing
+        1 - SLIST       Source only
+        2 - ALIST       Address only
+        3 - BLIST       Address only with allocation
+        4 - CLIST       Code
+        5 - ELIST       Equate only
+        6 - ILIST       IF conditional evaluation
+
+Parameter 3 is the number of output bytes listed
+for this line.
+
+   The  4th  parameter  is only output if an equate references a
+value in a different area.  The area name is output in the  fol-
+lowing format following the 3 parameters described above:  
+
+Line Position:  123456789012
+                ------------
+Area Name:       equatearea
+
+   When  the  line number is output to the .hlr file (-r option)
+the line number is prepended to the 3 or 4 parameters  described
+above.   The  line  number is always in decimal in the following
+format:  
+
+Line Position:  1234567
+                -------
+Decimal:          LLLLL
+
+   Thus the four formats (for each radix) that may be present in
+a .hlr file are:  
+
+Line Position:  123456789012345678901234567890
+                ------------------------------
+                 11 22 33
+                 11 22 33 equatearea
+                  LLLLL 11 22 33
+                  LLLLL 11 22 33 equatearea
+
+   The  linker understands these formats without any user inter-
+action.  
 
 <H5><A HREF="asmblr.htm#Index">  Return to the Assembler Index</A></H5>
 </PRE></B></H4>

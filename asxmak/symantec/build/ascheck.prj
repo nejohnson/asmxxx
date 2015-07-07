@@ -25,3 +25,4 @@ ascheck.DEF
 0 -1 0 0 0 "C:\SC\INCLUDE\string.h"
 0 -1 0 0 0 "..\..\..\ASCHECK\chk.h"
 0 0 0 0 0 "..\..\..\ASXXSRC\asmcro.c"
+0 -1 0 0 0 "C:\SC\INCLUDE\time.h"

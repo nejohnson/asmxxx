@@ -3,7 +3,7 @@
 #		LINUX Version
 #		=============
 #
-#   6 July 2012			Created for LINUX     / make /
+#   8 October 2014			Created for LINUX     / make /
 #
 ######################################################################
 
@@ -12,6 +12,7 @@
 all:	as1802		\
 	as2650		\
 	as430		\
+	as6100		\
 	as61860		\
 	as6500		\
 	as6800		\
@@ -24,6 +25,7 @@ all:	as1802		\
 	as6812		\
 	as6816		\
 	as740		\
+	as78k0s		\
 	as8048		\
 	as8051		\
 	as8085		\
@@ -57,7 +59,8 @@ clean:
 	rm -f $(SRC1802)*.o
 	rm -f $(SRC2650)*.o
 	rm -f $(SRC430)*.o
-	rm -f $(SRC6816)*.o
+	rm -f $(SRC6100)*.o
+	rm -f $(SRC61860)*.o
 	rm -f $(SRC6500)*.o
 	rm -f $(SRC6800)*.o
 	rm -f $(SRC6801)*.o
@@ -67,8 +70,9 @@ clean:
 	rm -f $(SRC6809)*.o
 	rm -f $(SRC6811)*.o
 	rm -f $(SRC6812)*.o
+	rm -f $(SRC6816)*.o
 	rm -f $(SRC740)*.o
-	rm -f $(SRC61860)*.o
+	rm -f $(SRC78K0S)*.o
 	rm -f $(SRC8048)*.o
 	rm -f $(SRC8051)*.o
 	rm -f $(SRC8085)*.o
@@ -92,6 +96,7 @@ clean:
 	rm -f as1802
 	rm -f as2650
 	rm -f as430
+	rm -f as6100
 	rm -f as61860
 	rm -f as6500
 	rm -f as6800
@@ -104,6 +109,7 @@ clean:
 	rm -f as6812
 	rm -f as6816
 	rm -f as740
+	rm -f as78k0s
 	rm -f as8048
 	rm -f as8051
 	rm -f as8085
@@ -138,7 +144,8 @@ prep:
 	rm -f $(SRC1802)*.o
 	rm -f $(SRC2650)*.o
 	rm -f $(SRC430)*.o
-	rm -f $(SRC6816)*.o
+	rm -f $(SRC6100)*.o
+	rm -f $(SRC61860)*.o
 	rm -f $(SRC6500)*.o
 	rm -f $(SRC6800)*.o
 	rm -f $(SRC6801)*.o
@@ -148,8 +155,9 @@ prep:
 	rm -f $(SRC6809)*.o
 	rm -f $(SRC6811)*.o
 	rm -f $(SRC6812)*.o
+	rm -f $(SRC6816)*.o
 	rm -f $(SRC740)*.o
-	rm -f $(SRC61860)*.o
+	rm -f $(SRC78K0S)*.o
 	rm -f $(SRC8048)*.o
 	rm -f $(SRC8051)*.o
 	rm -f $(SRC8085)*.o
@@ -173,6 +181,7 @@ prep:
 	rm -f as1802
 	rm -f as2650
 	rm -f as430
+	rm -f as6100
 	rm -f as61860
 	rm -f as6500
 	rm -f as6800
@@ -185,6 +194,7 @@ prep:
 	rm -f as6812
 	rm -f as6816
 	rm -f as740
+	rm -f as78k0s
 	rm -f as8048
 	rm -f as8051
 	rm -f as8085
@@ -231,6 +241,7 @@ DSTEXE:=	$(ASXBAS)asxmak/linux/exe/
 SRC1802=	$(ASXBAS)as1802/
 SRC2650=	$(ASXBAS)as2650/
 SRC430=		$(ASXBAS)as430/
+SRC6100=	$(ASXBAS)as6100/
 SRC61860=	$(ASXBAS)as61860/
 SRC6500=	$(ASXBAS)as6500/
 SRC6800=	$(ASXBAS)as6800/
@@ -243,6 +254,7 @@ SRC6811=	$(ASXBAS)as6811/
 SRC6812=	$(ASXBAS)as6812/
 SRC6816=	$(ASXBAS)as6816/
 SRC740=		$(ASXBAS)as740/
+SRC78K0S=	$(ASXBAS)as78k0s/
 SRC8048=	$(ASXBAS)as8048/
 SRC8051=	$(ASXBAS)as8051/
 SRC8085=	$(ASXBAS)as8085/
@@ -291,7 +303,7 @@ $(AS1802SRC):	$(SRCMISC)alloc.h $(SRCASX)asxxxx.h $(SRC1802)1802.h
 
 as1802:	$(ASXXSRC) $(AS1802SRC)
 	$(LD) $(LDFLAGS) $(ASXXSRC) $(AS1802SRC) -o as1802
-	cp as1802 -T $(DSTEXE)as1802
+	cp as1802 $(DSTEXE)as1802
 	strip $(DSTEXE)as1802
 	chmod 755 $(DSTEXE)as1802
 
@@ -328,6 +340,22 @@ as430:	$(ASXXSRC) $(AS430SRC)
 	cp as430 $(DSTEXE)as430
 	strip $(DSTEXE)as430
 	chmod 755 $(DSTEXE)as430
+
+####################################################################
+# AS6100
+####################################################################
+
+AS6100 =	i61adr.o i61mch.o i61pst.o
+
+AS6100SRC =	$(addprefix $(SRC6100),$(AS6100))
+
+$(AS6100SRC):	$(SRCMISC)alloc.h $(SRCASX)asxxxx.h $(SRC6100)i6100.h
+
+as6100:	$(ASXXSRC) $(AS6100SRC)
+	$(LD) $(LDFLAGS) $(ASXXSRC) $(AS6100SRC) -o as6100
+	cp as6100 $(DSTEXE)as6100
+	strip $(DSTEXE)as6100
+	chmod 755 $(DSTEXE)as6100
 
 ####################################################################
 # AS61860
@@ -531,6 +559,23 @@ as740:	$(ASXXSRC) $(AS740SRC)
 	cp as740 $(DSTEXE)as740
 	strip $(DSTEXE)as740
 	chmod 755 $(DSTEXE)as740
+
+
+####################################################################
+# AS78K0S
+####################################################################
+
+AS78K0S =	r78kadr.o r78kmch.o r78kpst.o
+
+AS78KSRC =	$(addprefix $(SRC78K0S),$(AS78K0S))
+
+$(AS78KSRC):	$(SRCMISC)alloc.h $(SRCASX)asxxxx.h $(SRC78K0S)r78k0s.h
+
+as78k0s:	$(ASXXSRC) $(AS78KSRC)
+	$(LD) $(LDFLAGS) $(ASXXSRC) $(AS78KSRC) -o as78k0s
+	cp as78k0s $(DSTEXE)as78k0s
+	strip $(DSTEXE)as78k0s
+	chmod 755 $(DSTEXE)as78k0s
 
 
 ####################################################################

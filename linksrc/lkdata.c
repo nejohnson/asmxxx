@@ -1,7 +1,7 @@
 /* lkdata.c */
 
 /*
- *  Copyright (C) 1989-2009  Alan R. Baldwin
+ *  Copyright (C) 1989-2014  Alan R. Baldwin
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -98,6 +98,8 @@ int	page;		/*	current page number
 			 */
 int	lop;		/*	current line number on page
 			 */
+time_t	curtim;		/*	pointer to the current time string
+			 */
 int	pass;		/*	linker pass number
 			 */
 a_uint	pc;		/*	current relocation address
@@ -139,11 +141,21 @@ a_uint	s_mask;		/*	Sign Mask
 			 */
 a_uint	v_mask;		/*	Value Mask
 			 */
-int	gline;		/*	LST file relocation active
-			 *	for current line
+a_uint	p_mask;		/*	Page Mask
 			 */
-int	gcntr;		/*	LST file relocation active
-			 *	counter
+int	gline;		/*	Read a LST line flag
+			 */
+int	gcntr;		/*	Bytes processed in LST line
+			 */
+int	hline;		/*	Read a HLR line flag
+			 */
+int	listing;	/*	Assembled line listing bits
+			 */
+int	lmode;		/*	Assembled line listing mode
+			 */
+int	bytcnt;		/*	Assenbled bytes for this line
+			 */
+char	eqt_id[128];	/*	Area name for this ELIST line
 			 */
 
 /*
@@ -214,6 +226,9 @@ FILE	*sfp = NULL;	/*	The file handle sfp points to the
 			 */
 FILE	*tfp = NULL;	/*	File handle for input
 			 *	ASxxxx listing file
+			 */
+FILE	*hfp = NULL;	/*	File handle for input ASxxxx
+			 *	.lst to .rst hint file
 			 */
 
 /*

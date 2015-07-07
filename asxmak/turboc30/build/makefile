@@ -3,13 +3,14 @@
 #		'Turbo C++ make'  Version
 #		=========================
 #
-#   29  June  2012
+#   8  October  2014
 #
 ####################################################################
 
 ASXXXX =	as1802		\
 		as2650		\
 		as430		\
+		as6100		\
 		as61860		\
 		as6500		\
 		as6800		\
@@ -22,6 +23,7 @@ ASXXXX =	as1802		\
 		as6812		\
 		as6816		\
 		as740		\
+		as78k0s		\
 		as8048		\
 		as8051		\
 		as8085		\
@@ -120,6 +122,7 @@ DSTEXE=		..\exe
 SRC1802=	$(ASXBAS)\as1802
 SRC2650=	$(ASXBAS)\as2650
 SRC430=		$(ASXBAS)\as430
+SRC6100=	$(ASXBAS)\as6100
 SRC61860=	$(ASXBAS)\as61860
 SRC6500=	$(ASXBAS)\as6500
 SRC6800=	$(ASXBAS)\as6800
@@ -132,6 +135,7 @@ SRC6811=	$(ASXBAS)\as6811
 SRC6812=	$(ASXBAS)\as6812
 SRC6816=	$(ASXBAS)\as6816
 SRC740=		$(ASXBAS)\as740
+SRC78K0S=	$(ASXBAS)\as78k0s
 SRC8048=	$(ASXBAS)\as8048
 SRC8051=	$(ASXBAS)\as8051
 SRC8085=	$(ASXBAS)\as8085
@@ -250,6 +254,30 @@ $(ASXX) +
 $(AS430)
 $(DSTEXE)\as430
 as430
+$(LIB)
+!
+
+
+####################################################################
+# AS6100
+####################################################################
+
+AS6100 =		i61adr.obj i61pst.obj i61mch.obj
+
+i61adr.obj:	$(SRC6100)\i61adr.c $(SRC6100)\i6100.h $(SRCASX)\asxxxx.h
+		$(CC) $(CCFLAGS) -I$(SRCASX) -I$(SRC6100) -I$(SRCMISC) $(SRC6100)\i61adr.c $<
+i61pst.obj:	$(SRC6100)\i61pst.c $(SRC6100)\i6100.h $(SRCASX)\asxxxx.h
+		$(CC) $(CCFLAGS) -I$(SRCASX) -I$(SRC6100) -I$(SRCMISC) $(SRC6100)\i61pst.c $<
+i61mch.obj:	$(SRC6100)\i61mch.c $(SRC6100)\i6100.h $(SRCASX)\asxxxx.h
+		$(CC) $(CCFLAGS) -I$(SRCASX) -I$(SRC6100) -I$(SRCMISC) $(SRC6100)\i61mch.c $<
+
+as6100:		$(ASXX) $(AS6100)
+		$(LD) $(LDFLAGS) @&&!
+$(STARTUP) +
+$(ASXX) +
+$(AS6100)
+$(DSTEXE)\as6100
+as6100
 $(LIB)
 !
 
@@ -538,6 +566,30 @@ $(ASXX) +
 $(AS740)
 $(DSTEXE)\as740
 as740
+$(LIB)
+!
+
+
+####################################################################
+# AS78K0S
+####################################################################
+
+AS78K0S =	r78kadr.obj r78kpst.obj r78kmch.obj
+
+r78kadr.obj:	$(SRC78K0S)\r78kadr.c $(SRC78K0S)\r78k0s.h $(SRCASX)\asxxxx.h
+		$(CC) $(CCFLAGS) -I$(SRCASX) -I$(SRC78K0S) -I$(SRCMISC) $(SRC78K0S)\r78kadr.c $<
+r78kpst.obj:	$(SRC78K0S)\r78kpst.c $(SRC78K0S)\r78k0s.h $(SRCASX)\asxxxx.h
+		$(CC) $(CCFLAGS) -I$(SRCASX) -I$(SRC78K0S) -I$(SRCMISC) $(SRC78K0S)\r78kpst.c $<
+r78kmch.obj:	$(SRC78K0S)\r78kmch.c $(SRC78K0S)\r78k0s.h $(SRCASX)\asxxxx.h
+		$(CC) $(CCFLAGS) -I$(SRCASX) -I$(SRC78K0S) -I$(SRCMISC) $(SRC78K0S)\r78kmch.c $<
+
+as78k0s:	$(ASXX) $(AS78K0S)
+		$(LD) $(LDFLAGS) @&&!
+$(STARTUP) +
+$(ASXX) +
+$(AS78K0S)
+$(DSTEXE)\as78k0s
+as78k0s
 $(LIB)
 !
 

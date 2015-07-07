@@ -1,7 +1,7 @@
 /* asmain.c */
 
 /*
- *  Copyright (C) 1989-2012  Alan R. Baldwin
+ *  Copyright (C) 1989-2014  Alan R. Baldwin
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@
  *		int	main(argc, argv)
  *		VOID	asexit(n)
  *		VOID	asmbl()
- *		FILE *	afile(fn, ft, wf)
+ *		FILE *	afile(fn, ft, md)
  *		int	fndidx(str)
  *		int	intsiz()
  *		VOID	newdot(nap)
@@ -101,6 +101,7 @@
  *		int *	cp		pointer to assembler output array cb[]
  *		int *	cpt		pointer to assembler relocation type
  *					output array cbt[]
+ *		time_t	curtim		current time string pointer
  *		def *	defp		pointer to a def structure
  *		char	eb[]		array of generated error codes
  *		char *	ep		pointer into error list array eb[]
@@ -111,7 +112,7 @@
  *					address of symbols caused by
  *					variable length instruction formats
  *		int	gflag		-g, make undefined symbols global flag
- *		int	hflag		-h, hidden option for diagnostic info dump
+ *		int	tflag		-h, hidden option for diagnostic info dump
  *		char	ib[]		assembler-source text line
  *		int	ifcnd[]		array of IF statement condition
  *					values (0 = FALSE) indexed by tlevel
@@ -133,6 +134,7 @@
  *		int	page		current page number
  *		int	pflag		enable listing pagination
  *		int	pass		assembler pass number
+ *		a_uint	p_mask		memory page length mask
  *		int	radix		current number conversion radix:
  *					2 (binary), 8 (octal), 10 (decimal),
  *					16 (hexadecimal)
@@ -173,6 +175,7 @@
  *		char *	strcpy()	c_library
  *		VOID	symglob()	assym.c
  *		VOID	syminit()	assym.c
+ *		time_t	time()		c_library
  *		VOID	usage()		asmain.c
  *
  *	side effects:
@@ -303,11 +306,18 @@ char *argv[];
 					++fflag;
 					break;
 
-				case 'h':
-				case 'H':
-					++hflag;
+				case 'r':
+				case 'R':
+					++rflag;
 					break;
 
+				case 't':
+				case 'T':
+					++tflag;
+					break;
+
+				case 'h':
+				case 'H':
 				default:
 					usage(ER_FATAL);
 				}
@@ -345,10 +355,13 @@ char *argv[];
 		lfp = afile(q, "lst", 1);
 	if (oflag)
 		ofp = afile(q, "rel", 1);
+	if (lflag && oflag)
+		hfp = afile(q, "hlr", 1);
 	if (sflag)
 		tfp = afile(q, "sym", 1);
 	exprmasks(2);
 	syminit();
+	curtim = time(NULL);
 	if (bflag != 0) {
 		il = ib;
 	} else {
@@ -398,6 +411,7 @@ char *argv[];
 		}
 		fuzz = 0;
 		as_msb = 1;
+		p_mask = DEFAULT_PMASK;
 		dot.s_addr = 0;
 		dot.s_area = &dca;
 		outbuf("I");
@@ -499,6 +513,7 @@ asexit(i)
 int i;
 {
 	if (lfp != NULL) fclose(lfp);
+	if (hfp != NULL) fclose(hfp);
 	if (ofp != NULL) fclose(ofp);
 	if (tfp != NULL) fclose(tfp);
 
@@ -519,7 +534,7 @@ int i;
 
 	asfree();
 
-	if (hflag) {
+	if (tflag) {
 		fprintf(stderr, "maxinc(include file level)    = %3d\n", maxinc);
 		fprintf(stderr, "maxmcr(macro expansion level) = %3d\n", maxmcr);
 		fprintf(stderr, "asmblk(1K Byte Allocations)   = %3d\n", asmblk);
@@ -999,7 +1014,7 @@ loop:
 					err('i');
 				}
 				if (!iflvl[tlevel]) {
-					lmode = ELIST;
+					lmode = ILIST;
 					laddr = n;
 				} else {
 					lmode = SLIST;
@@ -1030,7 +1045,7 @@ loop:
 						case O_IFTF:	flevel = 0;	break;
 						}
 					}
-					lmode = ELIST;
+					lmode = ILIST;
 					laddr = flevel ? 0 : 1;
 				} else {
 					lmode = SLIST;
@@ -1206,7 +1221,7 @@ loop:
 					ifcnd[tlevel] = 1;
 				}
 				if (!iflvl[tlevel]) {
-					lmode = ELIST;
+					lmode = ILIST;
 					laddr = ifcnd[tlevel];
 					return;
 				}
@@ -1232,6 +1247,7 @@ loop:
 		break;
 
 	case S_LISTING:
+		lmode = NLIST;
 		flags = 0;
 		while ((c=endline()) != 0) {
 			if (c == ',') {
@@ -1298,7 +1314,6 @@ loop:
 			default:				break;
 			}
 		}
-		lmode = (lnlist & LIST_LST) ? SLIST : NLIST;
 		return;
 
 	case S_PAGE:
@@ -1311,7 +1326,7 @@ loop:
 		if (!n && flevel)
 			return;
 
-		lop = NLPP;
+		lop = (lnlist & LIST_PAG) ? NLPP : 1;
 		return;
 
 	default:
@@ -1558,9 +1573,9 @@ loop:
 					if (v == B_FSFX) {
 						if ((c = getnb()) != '=')
 							qerr();
-						getid(opt, -1);
-						if (opt[0] == 0)
+						if ((ctype[c = getnb()] & (LETTER|DIGIT)) == 0)
 							qerr();
+						getid(opt, c);
 					} else
 					if (v == B_MAP) {
 						if ((c = getnb()) != '=')
@@ -1878,31 +1893,40 @@ loop:
 			size = 1 + ((dot.s_area->a_flag) & A_BYTES);
 			cnt = 0;
 			v = 0;
-			c = getmap(d);
-			while (c >= 0) {
-				c &= 0x7F;
-				if ((nc = getmap(d)) < 0) {
-					c |= 0x80;
-				}
+			if ((c = getmap(d)) < 0) {
 				if ((int) hilo) {
 					cnt += 1;
-					v |= (c << 8 * (size - cnt));
+					v = 0x80 << 8 * (size - cnt);
 				} else {
-					v |= (c << 8 * cnt);
+					v = 0x80 << 8 * cnt;
 					cnt += 1;
 				}
-				if ((cnt % size) == 0) {
-					switch(size) {
-					default:
-					case 1:	outab(v); break;
-					case 2: outaw(v); break;
-					case 3: outa3b(v); break;
-					case 4: outa4b(v); break;
+			} else {
+				while (c >= 0) {
+					c &= 0x7F;
+					if ((nc = getmap(d)) < 0) {
+						c |= 0x80;
 					}
-					cnt = 0;
-					v = 0;
+					if ((int) hilo) {
+						cnt += 1;
+						v |= (c << 8 * (size - cnt));
+					} else {
+						v |= (c << 8 * cnt);
+						cnt += 1;
+					}
+					if ((cnt % size) == 0) {
+						switch(size) {
+						default:
+						case 1:	outab(v); break;
+						case 2: outaw(v); break;
+						case 3: outa3b(v); break;
+						case 4: outa4b(v); break;
+						}
+						cnt = 0;
+						v = 0;
+					}
+					c = nc;
 				}
-				c = nc;
 			}
 			if (cnt != 0) {
 				switch(size) {
@@ -2055,6 +2079,7 @@ loop:
 		break;
 
 	case S_END:
+		lmode = SLIST;
 		if (more()) {
 			sp = lookup(".__.END.");
 			if (sp->s_type != S_NEW && (sp->s_flag & S_ASG) == 0) {
@@ -2187,13 +2212,21 @@ a_uint equtype;
 
 	sp->s_addr = laddr = e1->e_addr;
 	lmode = ELIST;
+	if (sp->s_area != NULL) {
+		eqt_area = sp->s_area->a_id;
+	} else {
+		eqt_area = NULL;
+	}
 }
 
 /*)Function	FILE *	afile(fn, ft, wf)
  *
  *		char *	fn		file specification string
  *		char *	ft		file type string
- *		int	wf		read(0)/write(1) flag
+ *		int	wf		0 ==>> read
+ *					1 ==>> write
+ *					2 ==>> binary read
+ *					3 ==>> binary write
  *
  *	The function afile() opens a file for reading or writing.
  *
@@ -2227,11 +2260,28 @@ char *ft;
 int wf;
 {
 	FILE *fp;
+	char *frmt;
 
 	afilex(fn, ft);
 
-	if ((fp = fopen(afntmp, wf?"w":"r")) == NULL) {
-	    fprintf(stderr, "?ASxxxx-Error-<cannot %s> : \"%s\"\n", wf?"create":"open", afntmp);
+	/*
+	 * Select (Binary) Read/Write
+	 */
+	switch(wf) {
+	default:
+	case 0:	frmt = "r";	break;
+	case 1:	frmt = "w";	break;
+#ifdef	DECUS
+	case 2:	frmt = "rn";	break;
+	case 3:	frmt = "wn";	break;
+#else
+	case 2:	frmt = "rb";	break;
+	case 3:	frmt = "wb";	break;
+#endif
+	}
+
+	if ((fp = fopen(afntmp, frmt)) == NULL) {
+	    fprintf(stderr, "?ASxxxx-Error-<cannot %s> : \"%s\"\n", (frmt[0] == 'w')?"create":"open", afntmp);
 	    asexit(ER_FATAL);
 	}
 

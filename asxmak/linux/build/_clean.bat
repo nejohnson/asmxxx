@@ -2,6 +2,7 @@ REM _clean.bat
 del ..\..\..\as1802\*.o
 del ..\..\..\as2650\*.o
 del ..\..\..\as430\*.o
+del ..\..\..\as6100\*.o
 del ..\..\..\as61860\*.o
 del ..\..\..\as6500\*.o
 del ..\..\..\as6800\*.o
@@ -14,6 +15,7 @@ del ..\..\..\as6811\*.o
 del ..\..\..\as6812\*.o
 del ..\..\..\as6816\*.o
 del ..\..\..\as740\*.o
+del ..\..\..\as78k0s\*.o
 del ..\..\..\as8048\*.o
 del ..\..\..\as8051\*.o
 del ..\..\..\as8085\*.o
@@ -39,5 +41,5 @@ del ..\..\..\asxxmisc\*.o
 del ..\..\..\s19os9\*.o
 del ..\..\..\asxxsrc\*.o
 del ..\misc\*.lst
-del /q ..\exe\*.*
+del /q ..\exe\as*
 

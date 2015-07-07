@@ -35,6 +35,12 @@ cd as430
 @echo off
 type as430.log
 cd ..
+cd as6100
+@echo on
+%MS$DEV% as6100.dsw /MAKE "as6100 - Win32 Release" /REBUILD /OUT as6100.log
+@echo off
+type as6100.log
+cd ..
 cd as61860
 @echo on
 %MS$DEV% as61860.dsw /MAKE "as61860 - Win32 Release" /REBUILD /OUT as61860.log
@@ -106,6 +112,12 @@ cd as740
 %MS$DEV% as740.dsw /MAKE "as740 - Win32 Release" /REBUILD /OUT as740.log
 @echo off
 type as740.log
+cd ..
+cd as78k0s
+@echo on
+%MS$DEV% as78k0s.dsw /MAKE "as78k0s - Win32 Release" /REBUILD /OUT as78k0s.log
+@echo off
+type as78k0s.log
 cd ..
 cd as8048
 @echo on
@@ -271,13 +283,13 @@ echo Valid arguments are:
 echo --------  --------  --------  --------  --------  --------
 echo all       ==        'blank'
 echo --------  --------  --------  --------  --------  --------
-echo as1802    as2650    as430     as740     as61860
-echo as6500    as6800    as6801    as6804    as6805
-echo as6808    as6809    as6811    as6812    as6816
-echo as8048    as8051    as8085    as8xcxxx  asz8
-echo asz80     asez80    asgb      asrab     ash8
-echo asf2mc8   asf8      asm8c     aspic     asavr
-echo ascheck   asscmp    asst6     asst7     asst8
+echo as1802    as2650    as430     as6100    as61860   as6500
+echo as6800    as6801    as6804    as6805    as6808    as6809
+echo as6811    as6812    as6816    as740     as78k0s   as8048
+echo as8051    as8085    as8xcxxx  asavr     ascheck   asez80
+echo asf2mc8   asf8      asgb      ash8      asm8c     aspic
+echo asrab     asscmp    asst6     asst7     asst8     asz8
+echo asz80     
 echo --------  --------  --------  --------  --------  --------
 echo aslink    asxcnv    asxscn    s19os9
 echo --------  --------  --------  --------  --------  --------
